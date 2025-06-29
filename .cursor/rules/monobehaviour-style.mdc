@@ -1,0 +1,66 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# MonoBehaviour Class Style Guide
+
+## Основные принципы
+
+1. **Минимализм**: Не добавляй лишние using, методы жизненного цикла или комментарии
+2. **Инкапсуляция**: Используй private и readonly модификаторы везде, где возможно
+3. **Чистота**: Следуй общепринятым практикам и кодстайлу C# и Unity
+
+## Примеры
+
+### ❌ Плохо:
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BadExample : MonoBehaviour
+{
+    // Public variable
+    public int health = 100;
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Empty method
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Empty method
+    }
+}
+```
+
+### ✅ Хорошо:
+
+```csharp
+using UnityEngine;
+
+public class GoodExample : MonoBehaviour
+{
+    [SerializeField] private int _health = 100;
+    
+    private readonly float _moveSpeed = 5f;
+    
+    private void Awake()
+    {
+        // Инициализация только если нужна
+    }
+}
+```
+
+## Правила
+
+1. Удаляй пустые методы жизненного цикла (Start, Update и т.д.)
+2. Используй [SerializeField] вместо public для переменных, которые нужно редактировать в инспекторе
+3. Используй префикс "_" для приватных полей
+4. Добавляй только те using директивы, которые реально используются
+5. Делай поля readonly, если их значение не меняется после инициализации
