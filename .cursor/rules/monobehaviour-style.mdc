@@ -46,9 +46,9 @@ using UnityEngine;
 
 public class GoodExample : MonoBehaviour
 {
-    [SerializeField] private int _health = 100;
+    [SerializeField] private int health = 100;
     
-    private readonly float _moveSpeed = 5f;
+    private readonly float moveSpeed = 5f;
     
     private void Awake()
     {
@@ -61,6 +61,5 @@ public class GoodExample : MonoBehaviour
 
 1. Удаляй пустые методы жизненного цикла (Start, Update и т.д.)
 2. Используй [SerializeField] вместо public для переменных, которые нужно редактировать в инспекторе
-3. Используй префикс "_" для приватных полей
-4. Добавляй только те using директивы, которые реально используются
-5. Делай поля readonly, если их значение не меняется после инициализации
+3. Добавляй только те using директивы, которые реально используются
+4. Делай поля readonly, если их значение не меняется после инициализации

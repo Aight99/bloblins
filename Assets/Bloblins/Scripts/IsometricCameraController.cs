@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class IsometricCameraController : MonoBehaviour
 {
-    [SerializeField] private Field field;
-    [SerializeField] private float cameraHeight = 10f;
-    [SerializeField] private float cameraAngle = 45f;
-    
+    [SerializeField]
+    private Field field;
+
+    [SerializeField]
+    private float cameraHeight = 10f;
+
+    [SerializeField]
+    private float cameraAngle = 45f;
+
     private Camera mainCamera;
-    
+
     void Awake()
     {
         mainCamera = GetComponent<Camera>();
@@ -21,12 +26,12 @@ public class IsometricCameraController : MonoBehaviour
             }
         }
     }
-    
+
     void Start()
     {
         SetupIsometricCamera();
     }
-    
+
     private void SetupIsometricCamera()
     {
         if (field == null)
@@ -34,14 +39,14 @@ public class IsometricCameraController : MonoBehaviour
             Debug.LogWarning("Field reference is not set in IsometricCameraController!");
             return;
         }
-        
+
         transform.rotation = Quaternion.Euler(cameraAngle, -45f, 0f);
-        
+
         Vector3 centerPosition = field.GetWorldPosition(5, 5);
         transform.position = new Vector3(centerPosition.x, cameraHeight, centerPosition.z);
-        
+
         mainCamera.orthographic = true;
-        
+
         mainCamera.orthographicSize = 5f;
     }
-} 
+}
