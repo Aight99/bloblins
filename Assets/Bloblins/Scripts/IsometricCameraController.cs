@@ -13,7 +13,7 @@ public class IsometricCameraController : MonoBehaviour
 
     private Camera mainCamera;
 
-    void Awake()
+    private void Awake()
     {
         mainCamera = GetComponent<Camera>();
         if (mainCamera == null)
@@ -27,7 +27,7 @@ public class IsometricCameraController : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
         SetupIsometricCamera();
     }
@@ -42,11 +42,10 @@ public class IsometricCameraController : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(cameraAngle, -45f, 0f);
 
-        Vector3 centerPosition = field.GetWorldPosition(5, 5);
+        Vector3 centerPosition = new Vector3(0, 0, 0);
         transform.position = new Vector3(centerPosition.x, cameraHeight, centerPosition.z);
 
         mainCamera.orthographic = true;
-
         mainCamera.orthographicSize = 5f;
     }
 }

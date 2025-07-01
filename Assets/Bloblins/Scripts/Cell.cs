@@ -3,42 +3,17 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    public int X { get; private set; }
-    public int Y { get; private set; }
+    private CellPosition position;
+    private Action<CellPosition> onClick;
 
-    private IEntity occupant;
-
-    public bool IsOccupied => occupant != null;
-
-    public static event Action<Cell> OnCellClicked;
-
-    public void Initialize(int x, int y)
+    internal void Initialize(int x, int y, Action<CellPosition> onClick)
     {
-        X = x;
-        Y = y;
-    }
-
-    public bool SetOccupant(IEntity entity)
-    {
-        if (IsOccupied)
-            return false;
-
-        occupant = entity;
-        return true;
-    }
-
-    public IEntity GetOccupant()
-    {
-        return occupant;
-    }
-
-    public void ClearOccupant()
-    {
-        occupant = null;
+        this.position = new CellPosition(x, y);
+        this.onClick = onClick;
     }
 
     private void OnMouseDown()
     {
-        OnCellClicked?.Invoke(this);
+        onClick?.Invoke(position);
     }
 }

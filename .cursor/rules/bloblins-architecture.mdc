@@ -3,8 +3,35 @@ description:
 globs: 
 alwaysApply: true
 ---
+# Архитектура проекта Bloblins
+
+## Основные компоненты
+
+1. [Field.cs](mdc:Assets/Bloblins/Scripts/Field.cs) - MonoBehaviour для создания и отображения игрового поля
+2. [Cell.cs](mdc:Assets/Bloblins/Scripts/Cell.cs) - MonoBehaviour для отдельной клетки, содержит только коллбеки
+3. [FieldManager.cs](mdc:Assets/Bloblins/Scripts/FieldManager.cs) - обычный класс для управления логикой поля и обработки нажатий
+4. [IEntity.cs](mdc:Assets/Bloblins/Scripts/IEntity.cs) - интерфейс для объектов, которые могут находиться на клетках
+5. [Bloblin.cs](mdc:Assets/Bloblins/Scripts/Bloblin.cs) - обычный класс для логики существа
+6. [Item.cs](mdc:Assets/Bloblins/Scripts/Item.cs) - обычный класс для предметов
+7. [GameManager.cs](mdc:Assets/Bloblins/Scripts/GameManager.cs) - управляет загрузкой уровней, целями и мета-прогрессией
+8. [IsometricCameraController.cs](mdc:Assets/Bloblins/Scripts/IsometricCameraController.cs) - настраивает камеру для изометрического вида
+9. [CellPosition.cs](mdc:Assets/Bloblins/Scripts/CellPosition.cs) - структура для хранения координат клетки
+
+## Поток данных
+
+1. GameManager отвечает за загрузку уровней, цели игры и мета-прогрессию (прокачка блоблинов)
+2. GameManager в методе Start передаёт в Field начальный конфиг уровня (размер, стартовые блоблины)
+3. Field создаёт игровое поле и инициализирует FieldManager
+4. FieldManager отвечает за текущее состояние поля (где находятся предметы и блоблины) и обрабатывает нажатия на клетки
+5. Cell имеет только коллбеки, которые вызывают переданную функцию с параметром структуры CellPosition
+
 ## Архитектурные принципы
 
 1. Не использовать синглтоны, явно передавать зависимости через SerializeField
 2. Не использовать комментарии в коде
-3. Используй private и readonly модификаторы везде, где возможно
+3. Использовать private и readonly модификаторы везде, где возможно
+4. MonoBehaviour наследуют только объекты, которые работают с префабами или с ними взаимодействует игрок
+5. Четкое разделение ответственности между компонентами
+6. Использовать коллбеки вместо прямых ссылок на объекты
+7. Использовать структуры для передачи данных между компонентами
+8. В именовании коллбеков не использовать слово "Callback" (например, onClick вместо onClickCallback)

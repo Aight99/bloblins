@@ -1,42 +1,15 @@
 using UnityEngine;
 
-public class Item : MonoBehaviour, IEntity
+public class Item : IEntity
 {
-    private Cell currentCell;
-    private Field field;
+    public int X { get; set; }
+    public int Y { get; set; }
+    public string Type { get; private set; }
 
-    public void Initialize(Field fieldReference)
+    public Item(string type)
     {
-        field = fieldReference;
+        Type = type;
     }
 
-    public Cell GetCurrentCell()
-    {
-        return currentCell;
-    }
-
-    public void PlaceOnCell(Cell cell)
-    {
-        if (currentCell != null)
-            currentCell.ClearOccupant();
-
-        currentCell = cell;
-        cell.SetOccupant(this);
-
-        transform.position = field.GetWorldPosition(cell.X, cell.Y);
-    }
-
-    public void RemoveFromCell()
-    {
-        if (currentCell != null)
-        {
-            currentCell.ClearOccupant();
-            currentCell = null;
-        }
-    }
-
-    public virtual void Interact(Bloblin bloblin)
-    {
-        Debug.Log($"Bloblin взаимодействует с {gameObject.name}");
-    }
+    public void Interact(Bloblin bloblin) { }
 }

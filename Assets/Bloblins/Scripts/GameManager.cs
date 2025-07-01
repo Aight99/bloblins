@@ -6,100 +6,44 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Field field;
 
-    [SerializeField]
-    private GameObject bloblinPrefab;
-
-    [SerializeField]
-    private GameObject itemPrefab;
-
-    [SerializeField]
-    private int initialBloblinCount = 3;
-
-    private List<Bloblin> bloblins = new List<Bloblin>();
-    private List<Item> items = new List<Item>();
-
-    void Start()
+    private void Start()
     {
-        if (field == null)
-        {
-            Debug.LogError("Field reference is not set in GameManager!");
-            return;
-        }
-
-        Invoke("SpawnEntities", 0.1f);
+        LoadLevel(1);
     }
 
-    private void SpawnEntities()
+    private void LoadLevel(int levelNumber)
     {
-        for (int i = 0; i < initialBloblinCount; i++)
-        {
-            SpawnBloblin(GetRandomEmptyCell());
-        }
-
-        for (int i = 0; i < initialBloblinCount; i++)
-        {
-            SpawnItem(GetRandomEmptyCell());
-        }
+        LevelConfig config = CreateLevelConfig(levelNumber);
+        field.Initialize(config);
     }
 
-    private Cell GetRandomEmptyCell()
+    private LevelConfig CreateLevelConfig(int levelNumber)
     {
-        int maxAttempts = 100;
-        int attempts = 0;
+        int width = 10;
+        int height = 10;
+        List<BloblinConfig> bloblins = new List<BloblinConfig>();
+        List<ItemConfig> items = new List<ItemConfig>();
 
-        while (attempts < maxAttempts)
+        switch (levelNumber)
         {
-            int x = Random.Range(0, 10);
-            int y = Random.Range(0, 10);
-
-            Cell cell = field.GetCell(x, y);
-            if (cell != null && !cell.IsOccupied)
-            {
-                return cell;
-            }
-
-            attempts++;
+            case 1:
+                bloblins.Add(new BloblinConfig("Standard", 1, 1));
+                bloblins.Add(new BloblinConfig("Standard", 3, 3));
+                items.Add(new ItemConfig("Coin", 5, 5));
+                items.Add(new ItemConfig("Potion", 7, 7));
+                break;
+            case 2:
+                bloblins.Add(new BloblinConfig("Standard", 2, 2));
+                bloblins.Add(new BloblinConfig("Elite", 4, 4));
+                items.Add(new ItemConfig("Coin", 6, 6));
+                items.Add(new ItemConfig("Gem", 8, 8));
+                break;
+            default:
+                bloblins.Add(new BloblinConfig("Standard", 1, 1));
+                items.Add(new ItemConfig("Coin", 5, 5));
+                break;
         }
 
-        Debug.LogWarning("Could not find empty cell after " + maxAttempts + " attempts");
-        return null;
-    }
-
-    private Bloblin SpawnBloblin(Cell cell)
-    {
-        if (cell == null || cell.IsOccupied || bloblinPrefab == null)
-            return null;
-
-        GameObject bloblinObject = Instantiate(bloblinPrefab);
-        Bloblin bloblin = bloblinObject.GetComponent<Bloblin>();
-
-        if (bloblin != null)
-        {
-            bloblin.Initialize(field);
-            bloblin.PlaceOnCell(cell);
-            bloblins.Add(bloblin);
-            return bloblin;
-        }
-
-        return null;
-    }
-
-    private Item SpawnItem(Cell cell)
-    {
-        if (cell == null || cell.IsOccupied || itemPrefab == null)
-            return null;
-
-        GameObject itemObject = Instantiate(itemPrefab);
-        Item item = itemObject.GetComponent<Item>();
-
-        if (item != null)
-        {
-            item.Initialize(field);
-            item.PlaceOnCell(cell);
-            items.Add(item);
-            return item;
-        }
-
-        return null;
+        return new LevelConfig(width, height, bloblins, items);
     }
 }
