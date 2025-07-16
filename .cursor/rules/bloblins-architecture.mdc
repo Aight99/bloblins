@@ -9,21 +9,30 @@ alwaysApply: true
 
 1. [Field.cs](mdc:Assets/Bloblins/Scripts/Field.cs) - MonoBehaviour для создания и отображения игрового поля
 2. [Cell.cs](mdc:Assets/Bloblins/Scripts/Cell.cs) - MonoBehaviour для отдельной клетки, содержит только коллбеки
-3. [FieldManager.cs](mdc:Assets/Bloblins/Scripts/FieldManager.cs) - обычный класс для управления логикой поля и обработки нажатий
+3. [GameManager.cs](mdc:Assets/Bloblins/Scripts/GameManager.cs) - управляет инициализацией игры и состоянием
 4. [IEntity.cs](mdc:Assets/Bloblins/Scripts/IEntity.cs) - интерфейс для объектов, которые могут находиться на клетках
 5. [Bloblin.cs](mdc:Assets/Bloblins/Scripts/Bloblin.cs) - обычный класс для логики существа
 6. [Item.cs](mdc:Assets/Bloblins/Scripts/Item.cs) - обычный класс для предметов
-7. [GameManager.cs](mdc:Assets/Bloblins/Scripts/GameManager.cs) - управляет загрузкой уровней, целями и мета-прогрессией
-8. [IsometricCameraController.cs](mdc:Assets/Bloblins/Scripts/IsometricCameraController.cs) - настраивает камеру для изометрического вида
-9. [CellPosition.cs](mdc:Assets/Bloblins/Scripts/CellPosition.cs) - структура для хранения координат клетки
+7. [IsometricCameraController.cs](mdc:Assets/Bloblins/Scripts/IsometricCameraController.cs) - настраивает камеру для изометрического вида
+8. [CellPosition.cs](mdc:Assets/Bloblins/Scripts/CellPosition.cs) - структура для хранения координат клетки
 
-## Поток данных
+## Компоненты состояния (UDF)
 
-1. GameManager отвечает за загрузку уровней, цели игры и мета-прогрессию (прокачка блоблинов)
-2. GameManager в методе Start передаёт в Field начальный конфиг уровня (размер, стартовые блоблины)
-3. Field создаёт игровое поле и инициализирует FieldManager
-4. FieldManager отвечает за текущее состояние поля (где находятся предметы и блоблины) и обрабатывает нажатия на клетки
-5. Cell имеет только коллбеки, которые вызывают переданную функцию с параметром структуры CellPosition
+1. [GameState.cs](mdc:Assets/Bloblins/Scripts/State/GameState.cs) - иммутабельное состояние игры
+2. [GameActions.cs](mdc:Assets/Bloblins/Scripts/State/GameActions.cs) - действия, которые могут изменить состояние
+3. [GameStore.cs](mdc:Assets/Bloblins/Scripts/State/GameStore.cs) - хранилище состояния и диспетчер действий
+4. [GameReducer.cs](mdc:Assets/Bloblins/Scripts/State/GameReducer.cs) - обработчик действий, создающий новое состояние
+5. [LevelConfig.cs](mdc:Assets/Bloblins/Scripts/State/LevelConfig.cs) - конфигурация уровней
+
+## Поток данных (UDF)
+
+1. GameManager инициализирует GameStore с начальным состоянием
+2. GameManager подписывается на изменения состояния через store.OnStateChanged
+3. GameManager передает ссылку на store в Field
+4. Field подписывается на изменения состояния и обновляет визуальное представление
+5. Cell отправляет действия в store через store.Dispatch при нажатии
+6. GameReducer обрабатывает действия и создает новое состояние
+7. Store уведомляет подписчиков об изменении состояния
 
 ## Архитектурные принципы
 
@@ -35,3 +44,7 @@ alwaysApply: true
 6. Использовать коллбеки вместо прямых ссылок на объекты
 7. Использовать структуры для передачи данных между компонентами
 8. В именовании коллбеков не использовать слово "Callback" (например, onClick вместо onClickCallback)
+9. Вся бизнес-логика находится в GameReducer и может быть покрыта юнит-тестами
+10. Состояние является иммутабельным и изменяется только через действия
+11. Однонаправленный поток данных (UDF) делает изменения предсказуемыми
+12. Презентационные компоненты (View) не содержат бизнес-логики

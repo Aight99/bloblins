@@ -16,27 +16,55 @@ public class Field : MonoBehaviour
     private int width;
     private int height;
     private Cell[,] cells;
-    private FieldManager fieldManager;
-    private Dictionary<Bloblin, GameObject> bloblinVisuals = new Dictionary<Bloblin, GameObject>();
-    private Dictionary<Item, GameObject> itemVisuals = new Dictionary<Item, GameObject>();
+    private GameStore store;
+    private Dictionary<CellPosition, GameObject> entityVisuals =
+        new Dictionary<CellPosition, GameObject>();
 
-    public void Initialize(LevelConfig config)
+    public void Initialize(GameStore store)
     {
-        this.width = config.Width;
-        this.height = config.Height;
+        this.store = store;
+        store.OnStateChanged += OnStateChanged;
+    }
 
-        fieldManager = new FieldManager(width, height, this);
-        CreateGrid();
+    private void OnStateChanged(GameState state)
+    {
+        var field = state.Field;
 
-        foreach (BloblinConfig bloblinConfig in config.Bloblins)
+        // Если размеры поля изменились, пересоздаем сетку
+        if (width != field.Width || height != field.Height)
         {
-            CreateBloblin(bloblinConfig);
+            ClearGrid();
+            width = field.Width;
+            height = field.Height;
+            CreateGrid();
         }
 
-        foreach (ItemConfig itemConfig in config.Items)
+        // Обновляем визуальное представление сущностей
+        UpdateEntityVisuals(field);
+    }
+
+    private void ClearGrid()
+    {
+        if (cells != null)
         {
-            CreateItem(itemConfig);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (cells[x, y] != null)
+                    {
+                        Destroy(cells[x, y].gameObject);
+                    }
+                }
+            }
         }
+
+        foreach (var visual in entityVisuals.Values)
+        {
+            Destroy(visual);
+        }
+
+        entityVisuals.Clear();
     }
 
     private void CreateGrid()
@@ -66,6 +94,77 @@ public class Field : MonoBehaviour
         }
     }
 
+    private void UpdateEntityVisuals(FieldState fieldState)
+    {
+        // Собираем текущие позиции
+        var currentPositions = new HashSet<CellPosition>();
+        foreach (var pair in fieldState.Entities)
+        {
+            currentPositions.Add(pair.Key);
+
+            // Если визуал уже существует в этой позиции, пропускаем
+            if (entityVisuals.ContainsKey(pair.Key))
+                continue;
+
+            // Создаем новый визуал
+            GameObject prefab = null;
+            string name = "";
+
+            if (pair.Value is Bloblin bloblin)
+            {
+                prefab = bloblinVisualPrefab;
+                name = $"Bloblin_{bloblin.Type}_{pair.Key.X}_{pair.Key.Y}";
+            }
+            else if (pair.Value is Item item)
+            {
+                prefab = itemVisualPrefab;
+                name = $"Item_{item.Type}_{pair.Key.X}_{pair.Key.Y}";
+            }
+
+            if (prefab != null)
+            {
+                Vector3 worldPos = GetWorldPosition(pair.Key);
+                GameObject visual = Instantiate(prefab, worldPos, Quaternion.identity, transform);
+                visual.name = name;
+                entityVisuals[pair.Key] = visual;
+            }
+        }
+
+        // Удаляем визуалы для позиций, где больше нет сущностей
+        var positionsToRemove = new List<CellPosition>();
+        foreach (var pair in entityVisuals)
+        {
+            if (!currentPositions.Contains(pair.Key))
+            {
+                Destroy(pair.Value);
+                positionsToRemove.Add(pair.Key);
+            }
+        }
+
+        foreach (var pos in positionsToRemove)
+        {
+            entityVisuals.Remove(pos);
+        }
+
+        // Обрабатываем перемещения сущностей
+        foreach (var pair in fieldState.Entities)
+        {
+            if (pair.Value is Bloblin bloblin)
+            {
+                var bloblinPos = new CellPosition(bloblin.X, bloblin.Y);
+                if (pair.Key.X != bloblin.X || pair.Key.Y != bloblin.Y)
+                {
+                    // Блоблин переместился, обновляем его позицию
+                    if (entityVisuals.TryGetValue(pair.Key, out var visual))
+                    {
+                        Vector3 targetPos = GetWorldPosition(bloblinPos);
+                        StartCoroutine(MoveVisualCoroutine(visual, targetPos));
+                    }
+                }
+            }
+        }
+    }
+
     public Vector3 GetWorldPosition(int x, int y)
     {
         float xPos = (x - y) * 0.5f;
@@ -78,52 +177,12 @@ public class Field : MonoBehaviour
         return GetWorldPosition(position.X, position.Y);
     }
 
-    private void CreateBloblin(BloblinConfig config)
-    {
-        Bloblin bloblin = new Bloblin(config.Type);
-        fieldManager.PlaceEntity(bloblin, new CellPosition(config.X, config.Y));
-
-        GameObject visual = Instantiate(
-            bloblinVisualPrefab,
-            GetWorldPosition(config.X, config.Y),
-            Quaternion.identity,
-            transform
-        );
-        visual.name = $"Bloblin_{config.Type}_{config.X}_{config.Y}";
-
-        bloblinVisuals.Add(bloblin, visual);
-    }
-
-    private void CreateItem(ItemConfig config)
-    {
-        Item item = new Item(config.Type);
-        fieldManager.PlaceEntity(item, new CellPosition(config.X, config.Y));
-
-        GameObject visual = Instantiate(
-            itemVisualPrefab,
-            GetWorldPosition(config.X, config.Y),
-            Quaternion.identity,
-            transform
-        );
-        visual.name = $"Item_{config.Type}_{config.X}_{config.Y}";
-
-        itemVisuals.Add(item, visual);
-    }
-
     private void OnCellClicked(CellPosition position)
     {
-        fieldManager.OnCellClicked(position);
+        store.Dispatch(new CellClickAction(position));
     }
 
-    public void MoveBloblinVisual(Bloblin bloblin, Vector3 targetPosition)
-    {
-        if (bloblinVisuals.TryGetValue(bloblin, out GameObject visual))
-        {
-            StartCoroutine(MoveBloblinVisualCoroutine(visual, targetPosition));
-        }
-    }
-
-    private IEnumerator MoveBloblinVisualCoroutine(GameObject visual, Vector3 targetPosition)
+    private IEnumerator MoveVisualCoroutine(GameObject visual, Vector3 targetPosition)
     {
         Vector3 startPosition = visual.transform.position;
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
@@ -145,49 +204,5 @@ public class Field : MonoBehaviour
         }
 
         visual.transform.position = targetPosition;
-    }
-}
-
-public class LevelConfig
-{
-    public int Width { get; private set; }
-    public int Height { get; private set; }
-    public List<BloblinConfig> Bloblins { get; private set; }
-    public List<ItemConfig> Items { get; private set; }
-
-    public LevelConfig(int width, int height, List<BloblinConfig> bloblins, List<ItemConfig> items)
-    {
-        Width = width;
-        Height = height;
-        Bloblins = bloblins;
-        Items = items;
-    }
-}
-
-public class BloblinConfig
-{
-    public string Type { get; private set; }
-    public int X { get; private set; }
-    public int Y { get; private set; }
-
-    public BloblinConfig(string type, int x, int y)
-    {
-        Type = type;
-        X = x;
-        Y = y;
-    }
-}
-
-public class ItemConfig
-{
-    public string Type { get; private set; }
-    public int X { get; private set; }
-    public int Y { get; private set; }
-
-    public ItemConfig(string type, int x, int y)
-    {
-        Type = type;
-        X = x;
-        Y = y;
     }
 }
