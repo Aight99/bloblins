@@ -27,6 +27,11 @@ public class IsometricCameraController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        SetupIsometricCamera();
+    }
+
     private void Start()
     {
         SetupIsometricCamera();

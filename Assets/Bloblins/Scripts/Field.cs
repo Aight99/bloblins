@@ -13,6 +13,19 @@ public class Field : MonoBehaviour
     [SerializeField]
     private GameObject itemVisualPrefab;
 
+    [Space(5)]
+    [Header("Layout")]
+    [SerializeField]
+    private float cellsXShift = 1f;
+
+    [SerializeField]
+    private float cellsZShift = 1f;
+
+    [Space(5)]
+    [Header("Debug")]
+    [SerializeField]
+    private float gizmoHeight = 0.5f;
+
     private int width;
     private int height;
     private Cell[,] cells;
@@ -24,6 +37,13 @@ public class Field : MonoBehaviour
     {
         this.store = store;
         store.OnStateChanged += OnStateChanged;
+    }
+
+    [ContextMenu("Redraw Grid")]
+    private void RedrawGrid()
+    {
+        ClearGrid();
+        CreateGrid();
     }
 
     private void OnStateChanged(GameState state)
@@ -167,8 +187,8 @@ public class Field : MonoBehaviour
 
     public Vector3 GetWorldPosition(int x, int y)
     {
-        float xPos = (x - y) * 0.5f;
-        float zPos = (x + y) * 0.25f;
+        float xPos = x * cellsXShift;
+        float zPos = y * cellsZShift;
         return new Vector3(xPos, 0, zPos);
     }
 
@@ -204,5 +224,28 @@ public class Field : MonoBehaviour
         }
 
         visual.transform.position = targetPosition;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (cells == null)
+            return;
+
+        Gizmos.color = Color.white;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (cells[x, y] != null)
+                {
+                    Vector3 position = GetWorldPosition(x, y);
+                    position.y += gizmoHeight;
+
+                    UnityEditor.Handles.color = Color.black;
+                    UnityEditor.Handles.Label(position, $"{x},{y}");
+                }
+            }
+        }
     }
 }
