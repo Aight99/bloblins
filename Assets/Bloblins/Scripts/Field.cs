@@ -146,6 +146,12 @@ public class Field : MonoBehaviour
                 Vector3 worldPos = GetWorldPosition(pair.Value);
                 GameObject visual = Instantiate(prefab, worldPos, Quaternion.identity, transform);
                 visual.name = name;
+
+                EntityVisual entityVisual = visual.GetComponent<EntityVisual>();
+                if (entityVisual == null)
+                    entityVisual = visual.AddComponent<EntityVisual>();
+
+                entityVisual.Initialize(pair.Value, OnCellClicked);
                 entityVisuals[pair.Key] = visual;
             }
         }
