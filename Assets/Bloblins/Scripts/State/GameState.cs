@@ -17,13 +17,13 @@ public class FieldState
     public readonly int Width;
     public readonly int Height;
     public readonly Dictionary<CellPosition, IEnvironmentObject> EnvironmentObjects;
-    public readonly List<Bloblin> Bloblins;
+    public readonly List<IBloblin> Bloblins;
 
     public FieldState(
         int width,
         int height,
         Dictionary<CellPosition, IEnvironmentObject> enviroment,
-        List<Bloblin> bloblins
+        List<IBloblin> bloblins
     )
     {
         Width = width;
@@ -42,12 +42,17 @@ public class FieldState
         return new FieldState(Width, Height, newEnvironment, Bloblins);
     }
 
-    public FieldState WithMovedBloblin(Bloblin bloblin, CellPosition target)
+    public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition target)
     {
         var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
         newEnvironment.Remove(bloblin.Position);
         newEnvironment[target] = bloblin;
-        bloblin.Position = target;
+
+        if (bloblin is Baldush baldush)
+        {
+            baldush.Position = target;
+        }
+
         return new FieldState(Width, Height, newEnvironment, Bloblins);
     }
 }

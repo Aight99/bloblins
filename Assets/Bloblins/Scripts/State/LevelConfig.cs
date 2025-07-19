@@ -18,11 +18,11 @@ public class LevelConfig
 
 public class BloblinConfig
 {
-    public string Type { get; private set; }
+    public BloblinType Type { get; private set; }
     public int X { get; private set; }
     public int Y { get; private set; }
 
-    public BloblinConfig(string type, int x, int y)
+    public BloblinConfig(BloblinType type, int x, int y)
     {
         Type = type;
         X = x;

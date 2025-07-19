@@ -130,7 +130,7 @@ public class Field : MonoBehaviour
             GameObject prefab = null;
             string name = "";
 
-            if (pair.Value is Bloblin bloblin)
+            if (pair.Value is IBloblin bloblin)
             {
                 prefab = bloblinVisualPrefab;
                 name = $"Bloblin_{bloblin.Name}_{pair.Key.X}_{pair.Key.Y}";

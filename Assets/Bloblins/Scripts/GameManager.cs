@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
             0,
             0,
             new Dictionary<CellPosition, IEnvironmentObject>(),
-            new List<Bloblin>()
+            new List<IBloblin>()
         );
         var initialState = new GameState(initialFieldState);
 

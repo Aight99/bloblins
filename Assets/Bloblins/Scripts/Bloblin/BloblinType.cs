@@ -1,0 +1,4 @@
+public enum BloblinType
+{
+    Baldush,
+}

@@ -22,14 +22,26 @@ public static class GameReducer
     {
         var config = CreateLevelConfig(action.LevelNumber);
         var objects = new Dictionary<CellPosition, IEnvironmentObject>();
-        var bloblins = new List<Bloblin>();
+        var bloblins = new List<IBloblin>();
 
         foreach (var bloblinConfig in config.Bloblins)
         {
             var position = new CellPosition(bloblinConfig.X, bloblinConfig.Y);
-            var bloblin = new Bloblin(bloblinConfig.Type, position);
-            objects[position] = bloblin;
-            bloblins.Add(bloblin);
+            IBloblin bloblin = null;
+
+            switch (bloblinConfig.Type)
+            {
+                case BloblinType.Baldush:
+                    bloblin = new Baldush(position);
+                    break;
+                // Add other bloblin types here when implemented
+            }
+
+            if (bloblin != null)
+            {
+                objects[position] = bloblin;
+                bloblins.Add(bloblin);
+            }
         }
 
         foreach (var itemConfig in config.Items)
@@ -59,7 +71,7 @@ public static class GameReducer
 
         if (objectOnCell != null)
         {
-            if (objectOnCell is Bloblin bloblin)
+            if (objectOnCell is IBloblin bloblin)
             {
                 DebugHelper.LogYippee($"это {bloblin.Name}");
             }
@@ -88,16 +100,16 @@ public static class GameReducer
         switch (levelNumber)
         {
             case 1:
-                bloblins.Add(new BloblinConfig("Балдуш", 4, 6));
+                bloblins.Add(new BloblinConfig(BloblinType.Baldush, 4, 6));
                 break;
             case 2:
-                bloblins.Add(new BloblinConfig("Standard", 2, 2));
-                bloblins.Add(new BloblinConfig("Elite", 4, 4));
+                bloblins.Add(new BloblinConfig(BloblinType.Baldush, 2, 2));
+                bloblins.Add(new BloblinConfig(BloblinType.Baldush, 4, 4));
                 items.Add(new ItemConfig("Coin", 6, 6));
                 items.Add(new ItemConfig("Gem", 8, 8));
                 break;
             default:
-                bloblins.Add(new BloblinConfig("Standard", 1, 1));
+                bloblins.Add(new BloblinConfig(BloblinType.Baldush, 1, 1));
                 items.Add(new ItemConfig("Coin", 5, 5));
                 break;
         }
