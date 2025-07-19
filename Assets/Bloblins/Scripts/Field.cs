@@ -143,7 +143,7 @@ public class Field : MonoBehaviour
 
             if (prefab != null)
             {
-                Vector3 worldPos = GetWorldPosition(pair.Key);
+                Vector3 worldPos = GetWorldPosition(pair.Value);
                 GameObject visual = Instantiate(prefab, worldPos, Quaternion.identity, transform);
                 visual.name = name;
                 entityVisuals[pair.Key] = visual;
@@ -167,60 +167,31 @@ public class Field : MonoBehaviour
         }
 
         // Обрабатываем перемещения сущностей
-        foreach (var pair in fieldState.Bloblins)
+        foreach (var bloblin in fieldState.Bloblins)
         {
-            var bloblinPos = pair.Position;
-            if (pair.Position.X != bloblinPos.X || pair.Position.Y != bloblinPos.Y)
+            if (entityVisuals.TryGetValue(bloblin.Position, out var visual))
             {
-                // Блоблин переместился, обновляем его позицию
-                if (entityVisuals.TryGetValue(bloblinPos, out var visual))
-                {
-                    Vector3 targetPos = GetWorldPosition(bloblinPos);
-                    StartCoroutine(MoveVisualCoroutine(visual, targetPos));
-                }
+                Vector3 targetPos = GetWorldPosition(bloblin);
+                visual.transform.position = targetPos;
             }
         }
     }
 
-    public Vector3 GetWorldPosition(int x, int y)
+    public Vector3 GetWorldPosition(int x, int y, float layer = Layers.Land)
     {
         float xPos = x * cellsXShift;
         float zPos = y * cellsZShift;
-        return new Vector3(xPos, 0, zPos);
+        return new Vector3(xPos, layer, zPos);
     }
 
-    public Vector3 GetWorldPosition(CellPosition position)
+    public Vector3 GetWorldPosition(IEnvironmentObject obj)
     {
-        return GetWorldPosition(position.X, position.Y);
+        return GetWorldPosition(obj.Position.X, obj.Position.Y, obj.DrawLayer);
     }
 
     private void OnCellClicked(CellPosition position)
     {
         store.Send(new CellClickAction(position));
-    }
-
-    private IEnumerator MoveVisualCoroutine(GameObject visual, Vector3 targetPosition)
-    {
-        Vector3 startPosition = visual.transform.position;
-        float journeyLength = Vector3.Distance(startPosition, targetPosition);
-        float moveSpeed = 5f;
-        float startTime = Time.time;
-
-        while (Vector3.Distance(visual.transform.position, targetPosition) > 0.01f)
-        {
-            float distCovered = (Time.time - startTime) * moveSpeed;
-            float fractionOfJourney = distCovered / journeyLength;
-
-            visual.transform.position = Vector3.Lerp(
-                startPosition,
-                targetPosition,
-                fractionOfJourney
-            );
-
-            yield return null;
-        }
-
-        visual.transform.position = targetPosition;
     }
 
     private void OnDrawGizmos()
