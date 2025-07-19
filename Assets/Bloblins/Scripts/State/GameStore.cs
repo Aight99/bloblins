@@ -13,7 +13,7 @@ public class GameStore
         state = initialState;
     }
 
-    public void Dispatch(GameAction action)
+    public void Send(GameAction action)
     {
         var newState = GameReducer.Reduce(state, action);
         if (newState != state)

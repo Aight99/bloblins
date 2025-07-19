@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 public static class GameReducer
 {
@@ -9,41 +8,38 @@ public static class GameReducer
         switch (action)
         {
             case LoadLevelAction loadLevel:
-                return HandleLoadLevel(state, loadLevel);
+                return HandleLoadLevel(loadLevel);
 
             case CellClickAction cellClick:
                 return HandleCellClick(state, cellClick);
-
-            case SelectBloblinAction selectBloblin:
-                return state.WithField(state.Field.WithSelectedBloblin(selectBloblin.Bloblin));
-
-            case MoveEntityAction moveEntity:
-                return state.WithField(state.Field.WithMovedEntity(moveEntity.From, moveEntity.To));
 
             default:
                 return state;
         }
     }
 
-    private static GameState HandleLoadLevel(GameState state, LoadLevelAction action)
+    private static GameState HandleLoadLevel(LoadLevelAction action)
     {
         var config = CreateLevelConfig(action.LevelNumber);
-        var entities = new Dictionary<CellPosition, IEntity>();
+        var objects = new Dictionary<CellPosition, IEnvironmentObject>();
+        var bloblins = new List<Bloblin>();
 
         foreach (var bloblinConfig in config.Bloblins)
         {
             var position = new CellPosition(bloblinConfig.X, bloblinConfig.Y);
-            entities[position] = new Bloblin(bloblinConfig.Type) { X = position.X, Y = position.Y };
+            var bloblin = new Bloblin(bloblinConfig.Type, position);
+            objects[position] = bloblin;
+            bloblins.Add(bloblin);
         }
 
         foreach (var itemConfig in config.Items)
         {
             var position = new CellPosition(itemConfig.X, itemConfig.Y);
-            entities[position] = new Item(itemConfig.Type) { X = position.X, Y = position.Y };
+            objects[position] = new Item(itemConfig.Type, position);
         }
 
-        var fieldState = new FieldState(config.Width, config.Height, entities);
-        return new GameState(fieldState, action.LevelNumber);
+        var fieldState = new FieldState(config.Width, config.Height, objects, bloblins);
+        return new GameState(fieldState);
     }
 
     private static GameState HandleCellClick(GameState state, CellClickAction action)
@@ -59,60 +55,27 @@ public static class GameReducer
         )
             return state;
 
-        field.Entities.TryGetValue(position, out var entity);
+        field.EnvironmentObjects.TryGetValue(position, out var objectOnCell);
 
-        if (entity != null)
+        if (objectOnCell != null)
         {
-            if (entity is Bloblin bloblin)
+            if (objectOnCell is Bloblin bloblin)
             {
-                return state.WithField(field.WithSelectedBloblin(bloblin));
+                DebugHelper.LogYippee($"это {bloblin.Name}");
             }
-            else if (entity is Item item && field.SelectedBloblin != null)
+            else if (objectOnCell is Item item)
             {
-                var bloblinPosition = new CellPosition(
-                    field.SelectedBloblin.X,
-                    field.SelectedBloblin.Y
-                );
-                if (IsAdjacent(bloblinPosition, position))
-                {
-                    item.Interact(field.SelectedBloblin);
-                    return state;
-                }
+                DebugHelper.LogYippee("это чевота");
             }
         }
-        else if (field.SelectedBloblin != null)
+        else
         {
-            var bloblinPosition = new CellPosition(
-                field.SelectedBloblin.X,
-                field.SelectedBloblin.Y
-            );
-            if (CanMoveTo(field, position))
-            {
-                return state.WithField(field.WithMovedEntity(bloblinPosition, position));
-            }
+            DebugHelper.LogMovement($"топаем на [{position.X};{position.Y}]");
+            var bloblin = field.Bloblins.First();
+            return state.WithField(field.WithMovedBloblin(bloblin, position));
         }
 
         return state;
-    }
-
-    private static bool IsAdjacent(CellPosition pos1, CellPosition pos2)
-    {
-        int dx = Mathf.Abs(pos1.X - pos2.X);
-        int dy = Mathf.Abs(pos1.Y - pos2.Y);
-        return dx <= 1 && dy <= 1 && dx + dy > 0;
-    }
-
-    private static bool CanMoveTo(FieldState field, CellPosition position)
-    {
-        if (
-            position.X < 0
-            || position.X >= field.Width
-            || position.Y < 0
-            || position.Y >= field.Height
-        )
-            return false;
-
-        return !field.Entities.ContainsKey(position);
     }
 
     private static LevelConfig CreateLevelConfig(int levelNumber)
@@ -125,10 +88,7 @@ public static class GameReducer
         switch (levelNumber)
         {
             case 1:
-                bloblins.Add(new BloblinConfig("Standard", 1, 1));
-                bloblins.Add(new BloblinConfig("Standard", 3, 3));
-                items.Add(new ItemConfig("Coin", 5, 5));
-                items.Add(new ItemConfig("Potion", 7, 7));
+                bloblins.Add(new BloblinConfig("Балдуш", 4, 6));
                 break;
             case 2:
                 bloblins.Add(new BloblinConfig("Standard", 2, 2));

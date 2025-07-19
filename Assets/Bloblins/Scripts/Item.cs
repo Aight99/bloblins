@@ -1,15 +1,13 @@
 using UnityEngine;
 
-public class Item : IEntity
+public class Item : IEnvironmentObject
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public CellPosition Position { get; private set; }
     public string Type { get; private set; }
 
-    public Item(string type)
+    public Item(string type, CellPosition position)
     {
         Type = type;
+        Position = position;
     }
-
-    public void Interact(Bloblin bloblin) { }
 }

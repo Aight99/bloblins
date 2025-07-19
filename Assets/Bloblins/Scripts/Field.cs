@@ -118,7 +118,7 @@ public class Field : MonoBehaviour
     {
         // Собираем текущие позиции
         var currentPositions = new HashSet<CellPosition>();
-        foreach (var pair in fieldState.Entities)
+        foreach (var pair in fieldState.EnvironmentObjects)
         {
             currentPositions.Add(pair.Key);
 
@@ -133,7 +133,7 @@ public class Field : MonoBehaviour
             if (pair.Value is Bloblin bloblin)
             {
                 prefab = bloblinVisualPrefab;
-                name = $"Bloblin_{bloblin.Type}_{pair.Key.X}_{pair.Key.Y}";
+                name = $"Bloblin_{bloblin.Name}_{pair.Key.X}_{pair.Key.Y}";
             }
             else if (pair.Value is Item item)
             {
@@ -167,19 +167,16 @@ public class Field : MonoBehaviour
         }
 
         // Обрабатываем перемещения сущностей
-        foreach (var pair in fieldState.Entities)
+        foreach (var pair in fieldState.Bloblins)
         {
-            if (pair.Value is Bloblin bloblin)
+            var bloblinPos = pair.Position;
+            if (pair.Position.X != bloblinPos.X || pair.Position.Y != bloblinPos.Y)
             {
-                var bloblinPos = new CellPosition(bloblin.X, bloblin.Y);
-                if (pair.Key.X != bloblin.X || pair.Key.Y != bloblin.Y)
+                // Блоблин переместился, обновляем его позицию
+                if (entityVisuals.TryGetValue(bloblinPos, out var visual))
                 {
-                    // Блоблин переместился, обновляем его позицию
-                    if (entityVisuals.TryGetValue(pair.Key, out var visual))
-                    {
-                        Vector3 targetPos = GetWorldPosition(bloblinPos);
-                        StartCoroutine(MoveVisualCoroutine(visual, targetPos));
-                    }
+                    Vector3 targetPos = GetWorldPosition(bloblinPos);
+                    StartCoroutine(MoveVisualCoroutine(visual, targetPos));
                 }
             }
         }
@@ -199,7 +196,7 @@ public class Field : MonoBehaviour
 
     private void OnCellClicked(CellPosition position)
     {
-        store.Dispatch(new CellClickAction(position));
+        store.Send(new CellClickAction(position));
     }
 
     private IEnumerator MoveVisualCoroutine(GameObject visual, Vector3 targetPosition)

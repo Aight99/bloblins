@@ -11,8 +11,13 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         // Создаем пустое начальное состояние
-        var initialFieldState = new FieldState(0, 0, new Dictionary<CellPosition, IEntity>());
-        var initialState = new GameState(initialFieldState, 0);
+        var initialFieldState = new FieldState(
+            0,
+            0,
+            new Dictionary<CellPosition, IEnvironmentObject>(),
+            new List<Bloblin>()
+        );
+        var initialState = new GameState(initialFieldState);
 
         // Инициализируем store
         store = new GameStore(initialState);
@@ -27,7 +32,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         // Загружаем уровень через действие
-        store.Dispatch(new LoadLevelAction(1));
+        store.Send(new LoadLevelAction(1));
     }
 
     private void OnStateChanged(GameState state)
