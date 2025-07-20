@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 868a5e9f6aa474960b10fefc25b0b923, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -212,7 +212,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f036b73e73393492ca5a75d804719959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 6366714227974038124, guid: 34bddf6c280ec4efab2ec5dff13666cd, type: 3}
+  groundCellPrefab: {fileID: 6366714227974038124, guid: 34bddf6c280ec4efab2ec5dff13666cd, type: 3}
+  waterCellPrefab: {fileID: 6366714227974038124, guid: 7cd10fff8c526447b968c98b6facfd5b, type: 3}
   bloblinVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
   itemVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
   cellsXShift: 1
@@ -397,8 +398,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.30991676, y: 0.36050975, z: -0.12837173, w: 0.8703476}
-  m_LocalPosition: {x: -0.03, y: 4.71, z: 0}
+  m_LocalRotation: {x: -0.0004490745, y: 0.9270565, z: -0.37491983, w: -0.0011109413}
+  m_LocalPosition: {x: 4.671763, y: 6.54121, z: 10.069182}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

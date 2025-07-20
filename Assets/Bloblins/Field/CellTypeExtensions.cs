@@ -8,8 +8,9 @@ public static class CellTypeExtensions
                 return true;
             case CellType.Water:
                 return false;
-            default:
-                return true;
+            case CellType.Void:
+                return false;
         }
+        throw new System.NotImplementedException();
     }
 }

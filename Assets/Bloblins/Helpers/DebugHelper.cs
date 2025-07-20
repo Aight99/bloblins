@@ -5,11 +5,14 @@ public static class DebugHelper
     public enum MessageType
     {
         Movement,
-        Yippee
+        Yippee,
+        Fiasco,
     }
 
     private static readonly Color Purple = new(0.47f, 0.34f, 0.94f);
     private static readonly Color Yellow = new(0.98f, 0.84f, 0.34f);
+    private static readonly Color Red = new(1f, 0.34f, 0.34f);
+    private static readonly Color Blue = new(0.34f, 0.6f, 1f);
 
     public static void Log(MessageType type, string message)
     {
@@ -25,6 +28,10 @@ public static class DebugHelper
             case MessageType.Yippee:
                 prefix = "ЯПИ!";
                 colorHex = ColorUtility.ToHtmlStringRGB(Yellow);
+                break;
+            case MessageType.Fiasco:
+                prefix = "ФИАСКО";
+                colorHex = ColorUtility.ToHtmlStringRGB(Blue);
                 break;
             default:
                 prefix = "";

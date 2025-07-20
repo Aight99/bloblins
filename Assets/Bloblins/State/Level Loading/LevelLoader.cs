@@ -3,12 +3,12 @@ using UnityEngine;
 
 public static class LevelLoader
 {
-    public static GameState LoadLevel(int levelNumber)
+    public static GameState LoadLevel(string levelName)
     {
-        var config = Resources.Load<LevelConfig>($"Levels/Level_{levelNumber}");
+        var config = Resources.Load<LevelConfig>($"Levels/{levelName}");
         if (config == null)
         {
-            Debug.LogError($"Level configuration not found for level {levelNumber}");
+            Debug.LogError($"Level configuration not found for level {levelName}");
             return null;
         }
 
@@ -52,7 +52,8 @@ public static class LevelLoader
                 case BloblinType.Baldush:
                     bloblin = new Baldush(position);
                     break;
-                // Add other bloblin types here when implemented
+                default:
+                    throw new System.NotImplementedException();
             }
 
             if (bloblin != null)

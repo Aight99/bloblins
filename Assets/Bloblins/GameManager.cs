@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        store.Send(new LoadLevelAction(1));
+        store.Send(new LoadLevelAction("Green Hills"));
     }
 
     private void OnStateChanged(GameState state)

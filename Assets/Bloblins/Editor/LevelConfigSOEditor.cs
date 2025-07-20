@@ -18,8 +18,9 @@ public class LevelConfigEditor : Editor
         EditorGUILayout.HelpBox(
             "Map Layout Legend:\n"
                 + "G - Ground (walkable)\n"
-                + "W - Water (not walkable)\n\n"
-                + "Make sure each row has the same number of characters!",
+                + "W - Water (not walkable)\n"
+                + "_ - Void (not walkable)\n\n"
+                + "Map dimensions are calculated automatically based on the layout.",
             MessageType.Info
         );
 
@@ -162,9 +163,10 @@ public class LevelPreviewWindow : EditorWindow
                 return new Color(0.2f, 0.8f, 0.2f);
             case CellType.Water:
                 return new Color(0.2f, 0.2f, 0.8f);
-            default:
-                return Color.gray;
+            case CellType.Void:
+                return new Color(0.1f, 0.1f, 0.1f);
         }
+        throw new System.NotImplementedException();
     }
 }
 #endif

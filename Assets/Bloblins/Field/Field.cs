@@ -63,7 +63,6 @@ public class Field : MonoBehaviour
     {
         var field = state.Field;
 
-        // Если размеры поля изменились, пересоздаем сетку
         if (width != field.Width || height != field.Height)
         {
             ClearGrid();
@@ -72,7 +71,6 @@ public class Field : MonoBehaviour
             CreateGrid();
         }
 
-        // Обновляем визуальное представление сущностей
         UpdateEntityVisuals(field);
     }
 
@@ -109,14 +107,13 @@ public class Field : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 CellType cellType = GetCellTypeFromState(x, y);
+                if (cellType == CellType.Void)
+                    continue;
+
                 Vector3 position = GetWorldPosition(x, y);
 
-                GameObject prefab = cellPrefabs[cellType];
-                if (prefab == null)
-                    prefab = groundCellPrefab;
-
                 GameObject cellObject = Instantiate(
-                    prefab,
+                    cellPrefabs[cellType],
                     position,
                     Quaternion.identity,
                     transform
@@ -141,17 +138,14 @@ public class Field : MonoBehaviour
 
     private void UpdateEntityVisuals(FieldState fieldState)
     {
-        // Собираем текущие позиции
         var currentPositions = new HashSet<CellPosition>();
         foreach (var pair in fieldState.EnvironmentObjects)
         {
             currentPositions.Add(pair.Key);
 
-            // Если визуал уже существует в этой позиции, пропускаем
             if (entityVisuals.ContainsKey(pair.Key))
                 continue;
 
-            // Создаем новый визуал
             GameObject prefab = null;
             string name = "";
 
@@ -181,7 +175,6 @@ public class Field : MonoBehaviour
             }
         }
 
-        // Удаляем визуалы для позиций, где больше нет сущностей
         var positionsToRemove = new List<CellPosition>();
         foreach (var pair in entityVisuals)
         {
@@ -197,7 +190,6 @@ public class Field : MonoBehaviour
             entityVisuals.Remove(pos);
         }
 
-        // Обрабатываем перемещения сущностей
         foreach (var bloblin in fieldState.Bloblins)
         {
             if (entityVisuals.TryGetValue(bloblin.Position, out var visual))

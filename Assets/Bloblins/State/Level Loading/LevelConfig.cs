@@ -5,12 +5,6 @@ using UnityEngine;
 public class LevelConfig : ScriptableObject
 {
     [SerializeField]
-    private int width = 10;
-
-    [SerializeField]
-    private int height = 10;
-
-    [SerializeField]
     private List<BloblinConfig> bloblins = new List<BloblinConfig>();
 
     [SerializeField]
@@ -19,8 +13,35 @@ public class LevelConfig : ScriptableObject
     [SerializeField, TextArea(10, 20)]
     private string mapLayout;
 
-    public int Width => width;
-    public int Height => height;
+    public int Width
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(mapLayout))
+                return 0;
+
+            string[] rows = mapLayout.Split('\n');
+            int maxWidth = 0;
+            foreach (string row in rows)
+            {
+                if (row.TrimEnd().Length > maxWidth)
+                    maxWidth = row.TrimEnd().Length;
+            }
+            return maxWidth;
+        }
+    }
+
+    public int Height
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(mapLayout))
+                return 0;
+
+            return mapLayout.Split('\n').Length;
+        }
+    }
+
     public string MapLayout => mapLayout;
     public List<BloblinConfig> Bloblins => bloblins;
     public List<ItemConfig> Items => items;
@@ -37,7 +58,7 @@ public class LevelConfig : ScriptableObject
 
         string row = rows[y].TrimEnd();
         if (x >= row.Length)
-            return CellType.Ground;
+            return CellType.Void;
 
         char cellChar = row[x];
         return GetCellTypeFromChar(cellChar);
@@ -47,10 +68,14 @@ public class LevelConfig : ScriptableObject
     {
         switch (c)
         {
+            case 'G':
+                return CellType.Ground;
             case 'W':
                 return CellType.Water;
+            case '_':
+                return CellType.Void;
             default:
-                return CellType.Ground;
+                throw new System.NotImplementedException();
         }
     }
 }

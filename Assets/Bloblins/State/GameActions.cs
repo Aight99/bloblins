@@ -12,10 +12,10 @@ public class CellClickAction : GameAction
 
 public class LoadLevelAction : GameAction
 {
-    public readonly int LevelNumber;
+    public readonly string LevelName;
 
-    public LoadLevelAction(int levelNumber)
+    public LoadLevelAction(string levelName)
     {
-        LevelNumber = levelNumber;
+        LevelName = levelName;
     }
 }

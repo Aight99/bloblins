@@ -59,13 +59,20 @@ public class FieldState
         var positionToMove = bloblin.GetMoveTarget(selectedCell);
 
         if (!CellTypes[positionToMove].CanMoveTo())
+        {
+            DebugHelper.Log(
+                DebugHelper.MessageType.Fiasco,
+                $"нельзя ходить на [{positionToMove.X};{positionToMove.Y}] (тип: {CellTypes[positionToMove]})"
+            );
             return this;
+        }
 
         var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
         newEnvironment.Remove(bloblin.Position);
         newEnvironment[positionToMove] = bloblin;
         bloblin.Position = positionToMove;
 
+        DebugHelper.LogMovement($"топаем на [{positionToMove.X};{positionToMove.Y}]");
         return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
     }
 }
