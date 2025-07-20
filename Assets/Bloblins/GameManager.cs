@@ -10,28 +10,17 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Создаем пустое начальное состояние
-        var initialFieldState = new FieldState(
-            0,
-            0,
-            new Dictionary<CellPosition, IEnvironmentObject>(),
-            new List<IBloblin>()
-        );
-        var initialState = new GameState(initialFieldState);
+        var initialState = new GameState();
 
-        // Инициализируем store
         store = new GameStore(initialState);
 
-        // Подписываемся на изменения состояния
         store.OnStateChanged += OnStateChanged;
 
-        // Передаем store в Field
         field.Initialize(store);
     }
 
     private void Start()
     {
-        // Загружаем уровень через действие
         store.Send(new LoadLevelAction(1));
     }
 

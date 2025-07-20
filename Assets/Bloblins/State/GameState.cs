@@ -4,9 +4,9 @@ public class GameState
 {
     public readonly FieldState Field;
 
-    public GameState(FieldState field)
+    public GameState(FieldState field = null)
     {
-        Field = field;
+        Field = field ?? new FieldState();
     }
 
     public GameState WithField(FieldState field) => new(field);
@@ -33,6 +33,15 @@ public class FieldState
         EnvironmentObjects = environment;
         Bloblins = bloblins;
         CellTypes = cellTypes;
+    }
+
+    public FieldState()
+    {
+        Width = 0;
+        Height = 0;
+        EnvironmentObjects = new Dictionary<CellPosition, IEnvironmentObject>();
+        Bloblins = new List<IBloblin>();
+        CellTypes = new Dictionary<CellPosition, CellType>();
     }
 
     public FieldState WithEnviroment(CellPosition position, IEnvironmentObject environment)
