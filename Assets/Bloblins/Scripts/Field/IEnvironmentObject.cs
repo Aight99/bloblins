@@ -1,6 +1,6 @@
 public interface IEnvironmentObject
 {
-    CellPosition Position { get; }
+    CellPosition Position { get; set; }
     float DrawLayer { get; }
 }
 

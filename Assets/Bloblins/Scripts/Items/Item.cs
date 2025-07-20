@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Item : IEnvironmentObject
 {
-    public CellPosition Position { get; private set; }
+    public CellPosition Position { get; set; }
     public string Type { get; private set; }
     public float DrawLayer => Layers.Items;
 

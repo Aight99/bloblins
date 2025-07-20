@@ -42,16 +42,16 @@ public class FieldState
         return new FieldState(Width, Height, newEnvironment, Bloblins);
     }
 
-    public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition target)
+    public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition selectedCell)
     {
+        var positionToMove = bloblin.GetMoveTarget(selectedCell);
+
+        // FIXME: Проверка, что цель доступна
+
         var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
         newEnvironment.Remove(bloblin.Position);
-        newEnvironment[target] = bloblin;
-
-        if (bloblin is Baldush baldush)
-        {
-            baldush.Position = target;
-        }
+        newEnvironment[positionToMove] = bloblin;
+        bloblin.Position = positionToMove;
 
         return new FieldState(Width, Height, newEnvironment, Bloblins);
     }

@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7509721bba01c4a7ca7f52f97314a43b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  field: {fileID: 559617771}
+  field: {fileID: 559617773}
 --- !u!4 &527668256
 Transform:
   m_ObjectHideFlags: 0
@@ -177,7 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 559617772}
-  - component: {fileID: 559617771}
+  - component: {fileID: 559617773}
   m_Layer: 0
   m_Name: Field
   m_TagString: Untagged
@@ -185,24 +185,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &559617771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559617770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2b3b217efbf4a538c0a2efe2e83f08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 6366714227974038124, guid: 34bddf6c280ec4efab2ec5dff13666cd, type: 3}
-  bloblinVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
-  itemVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
-  cellsXShift: 1
-  cellsZShift: 1
-  gizmoHeight: 0.5
 --- !u!4 &559617772
 Transform:
   m_ObjectHideFlags: 0
@@ -218,6 +200,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559617773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559617770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f036b73e73393492ca5a75d804719959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellPrefab: {fileID: 6366714227974038124, guid: 34bddf6c280ec4efab2ec5dff13666cd, type: 3}
+  bloblinVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
+  itemVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
+  cellsXShift: 1
+  cellsZShift: 1
+  gizmoHeight: 0.5
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
