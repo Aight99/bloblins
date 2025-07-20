@@ -202,7 +202,7 @@ public class Field : MonoBehaviour
 
     public Vector3 GetWorldPosition(int x, int y, float layer = Layers.Land)
     {
-        float xPos = x * cellsXShift;
+        float xPos = x * -cellsXShift;
         float zPos = y * cellsZShift;
         return new Vector3(xPos, layer, zPos);
     }
