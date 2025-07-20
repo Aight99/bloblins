@@ -18,18 +18,21 @@ public class FieldState
     public readonly int Height;
     public readonly Dictionary<CellPosition, IEnvironmentObject> EnvironmentObjects;
     public readonly List<IBloblin> Bloblins;
+    public readonly Dictionary<CellPosition, CellType> CellTypes;
 
     public FieldState(
         int width,
         int height,
-        Dictionary<CellPosition, IEnvironmentObject> enviroment,
-        List<IBloblin> bloblins
+        Dictionary<CellPosition, IEnvironmentObject> environment,
+        List<IBloblin> bloblins,
+        Dictionary<CellPosition, CellType> cellTypes
     )
     {
         Width = width;
         Height = height;
-        EnvironmentObjects = enviroment;
+        EnvironmentObjects = environment;
         Bloblins = bloblins;
+        CellTypes = cellTypes;
     }
 
     public FieldState WithEnviroment(CellPosition position, IEnvironmentObject environment)
@@ -39,20 +42,21 @@ public class FieldState
             newEnvironment.Remove(position);
         else
             newEnvironment[position] = environment;
-        return new FieldState(Width, Height, newEnvironment, Bloblins);
+        return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
     }
 
     public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition selectedCell)
     {
         var positionToMove = bloblin.GetMoveTarget(selectedCell);
 
-        // FIXME: Проверка, что цель доступна
+        if (!CellTypes[positionToMove].CanMoveTo())
+            return this;
 
         var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
         newEnvironment.Remove(bloblin.Position);
         newEnvironment[positionToMove] = bloblin;
         bloblin.Position = positionToMove;
 
-        return new FieldState(Width, Height, newEnvironment, Bloblins);
+        return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
     }
 }

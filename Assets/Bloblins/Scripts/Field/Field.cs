@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Field : MonoBehaviour
 {
+    [Header("Cell Prefabs")]
     [SerializeField]
-    private GameObject cellPrefab;
+    private GameObject groundCellPrefab;
 
+    [SerializeField]
+    private GameObject waterCellPrefab;
+
+    [Space(5)]
+    [Header("Entity Prefabs")]
     [SerializeField]
     private GameObject bloblinVisualPrefab;
 
@@ -32,11 +38,18 @@ public class Field : MonoBehaviour
     private GameStore store;
     private Dictionary<CellPosition, GameObject> entityVisuals =
         new Dictionary<CellPosition, GameObject>();
+    private Dictionary<CellType, GameObject> cellPrefabs = new Dictionary<CellType, GameObject>();
 
     public void Initialize(GameStore store)
     {
         this.store = store;
         store.OnStateChanged += OnStateChanged;
+    }
+
+    private void Awake()
+    {
+        cellPrefabs[CellType.Ground] = groundCellPrefab;
+        cellPrefabs[CellType.Water] = waterCellPrefab;
     }
 
     [ContextMenu("Redraw Grid")]
@@ -95,14 +108,20 @@ public class Field : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
+                CellType cellType = GetCellTypeFromState(x, y);
                 Vector3 position = GetWorldPosition(x, y);
+
+                GameObject prefab = cellPrefabs[cellType];
+                if (prefab == null)
+                    prefab = groundCellPrefab;
+
                 GameObject cellObject = Instantiate(
-                    cellPrefab,
+                    prefab,
                     position,
                     Quaternion.identity,
                     transform
                 );
-                cellObject.name = $"Cell_{x}_{y}";
+                cellObject.name = $"Cell_{x}_{y}_{cellType}";
 
                 Cell cell = cellObject.GetComponent<Cell>();
                 if (cell == null)
@@ -112,6 +131,12 @@ public class Field : MonoBehaviour
                 cells[x, y] = cell;
             }
         }
+    }
+
+    private CellType GetCellTypeFromState(int x, int y)
+    {
+        var position = new CellPosition(x, y);
+        return store.State.Field.CellTypes[position];
     }
 
     private void UpdateEntityVisuals(FieldState fieldState)

@@ -6,13 +6,50 @@ public class LevelConfig
     public int Height { get; private set; }
     public List<BloblinConfig> Bloblins { get; private set; }
     public List<ItemConfig> Items { get; private set; }
+    public string MapLayout { get; private set; }
 
-    public LevelConfig(int width, int height, List<BloblinConfig> bloblins, List<ItemConfig> items)
+    public LevelConfig(
+        int width,
+        int height,
+        List<BloblinConfig> bloblins,
+        List<ItemConfig> items,
+        string mapLayout
+    )
     {
         Width = width;
         Height = height;
         Bloblins = bloblins;
         Items = items;
+        MapLayout = mapLayout;
+    }
+
+    public CellType GetCellTypeAt(int x, int y)
+    {
+        if (string.IsNullOrEmpty(MapLayout))
+            return CellType.Ground;
+
+        string[] rows = MapLayout.Split('\n');
+
+        if (y < 0 || y >= rows.Length || x < 0)
+            return CellType.Ground;
+
+        string row = rows[y].TrimEnd();
+        if (x >= row.Length)
+            return CellType.Ground;
+
+        char cellChar = row[x];
+        return GetCellTypeFromChar(cellChar);
+    }
+
+    private CellType GetCellTypeFromChar(char c)
+    {
+        switch (c)
+        {
+            case 'W':
+                return CellType.Water;
+            default:
+                return CellType.Ground;
+        }
     }
 }
 
