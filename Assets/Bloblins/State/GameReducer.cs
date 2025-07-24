@@ -30,17 +30,16 @@ public static class GameReducer
         {
             if (objectOnCell is IBloblin bloblin)
             {
-                DebugHelper.LogYippee($"это {bloblin.Name}");
+                return state.WithSelectedBloblin(bloblin);
             }
             else if (objectOnCell is Item item)
             {
                 DebugHelper.LogYippee("это чевота");
             }
         }
-        else
+        else if (state.SelectedBloblin != null)
         {
-            var bloblin = field.Bloblins.First();
-            return state.WithField(field.WithMovedBloblin(bloblin, position));
+            return state.WithField(field.WithMovedBloblin(state.SelectedBloblin, position));
         }
 
         return state;
