@@ -13,7 +13,6 @@ public class Baldush : IBloblin
 
     public CellPosition GetMoveTarget(CellPosition position)
     {
-        return new CellPosition(position.X + 1, position.Y - 1);
-        // return position;
+        return position;
     }
 }
