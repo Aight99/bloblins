@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -87,12 +87,19 @@ public class Field : MonoBehaviour
             {
                 for (int y = -moveRange; y <= moveRange; y++)
                 {
-                    var newX = selectedBloblin.Position.X + x;
-                    var newY = selectedBloblin.Position.Y + y;
-                    if (newX < 0 || newX >= width || newY < 0 || newY >= height)
+                    var newPosition = new CellPosition(
+                        selectedBloblin.Position.X + x,
+                        selectedBloblin.Position.Y + y
+                    );
+
+                    if (!store.State.Field.CellTypes.ContainsKey(newPosition))
+                        continue;
+                    if (!store.State.Field.CellTypes[newPosition].IsWalkable())
+                        continue;
+                    if (!selectedBloblin.CanMoveTo(selectedBloblin.Position, newPosition))
                         continue;
 
-                    var cell = cells[newX, newY];
+                    var cell = cells[newPosition.X, newPosition.Y];
                     if (cell != null)
                     {
                         highlightedCells.Add(cell);

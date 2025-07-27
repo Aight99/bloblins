@@ -1,5 +1,3 @@
-using System;
-
 public class Baldush : IBloblin
 {
     public CellPosition Position { get; set; }
@@ -10,10 +8,5 @@ public class Baldush : IBloblin
     {
         Name = "Балдуш";
         Position = position;
-    }
-
-    public CellPosition GetMoveTarget(CellPosition position)
-    {
-        return position;
     }
 }

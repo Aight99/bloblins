@@ -44,23 +44,24 @@ public class FieldState
 
     public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition selectedCell)
     {
-        var positionToMove = bloblin.GetMoveTarget(selectedCell);
+        var isReachable = bloblin.CanMoveTo(bloblin.Position, selectedCell);
+        var isWalkable = CellTypes[selectedCell].IsWalkable();
 
-        if (!CellTypes[positionToMove].CanMoveTo())
+        if (!isReachable || !isWalkable)
         {
             DebugHelper.Log(
                 DebugHelper.MessageType.Fiasco,
-                $"нельзя ходить на {positionToMove} (тип: {CellTypes[positionToMove]})"
+                $"нельзя пойти на {selectedCell} (тип: {CellTypes[selectedCell]})"
             );
             return this;
         }
 
         var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
         newEnvironment.Remove(bloblin.Position);
-        newEnvironment[positionToMove] = bloblin;
-        bloblin.Position = positionToMove;
+        newEnvironment[selectedCell] = bloblin;
+        bloblin.Position = selectedCell;
 
-        DebugHelper.LogMovement($"топаем на {positionToMove}");
+        DebugHelper.LogMovement($"топаем на {selectedCell}");
         return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
     }
 }

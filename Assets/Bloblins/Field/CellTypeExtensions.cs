@@ -1,6 +1,6 @@
 public static class CellTypeExtensions
 {
-    public static bool CanMoveTo(this CellType cellType)
+    public static bool IsWalkable(this CellType cellType)
     {
         switch (cellType)
         {
