@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -24,7 +23,7 @@ public class GameManager : MonoBehaviour
         store.Send(new LoadLevelAction("Green Hills"));
     }
 
-    private void OnStateChanged(GameState state)
+    private void OnStateChanged()
     {
         // Здесь можно добавить логику, реагирующую на изменение состояния
         // Например, проверку условий победы, сохранение прогресса и т.д.

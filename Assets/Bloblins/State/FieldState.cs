@@ -50,7 +50,7 @@ public class FieldState
         {
             DebugHelper.Log(
                 DebugHelper.MessageType.Fiasco,
-                $"нельзя ходить на [{positionToMove.X};{positionToMove.Y}] (тип: {CellTypes[positionToMove]})"
+                $"нельзя ходить на {positionToMove} (тип: {CellTypes[positionToMove]})"
             );
             return this;
         }
@@ -60,7 +60,7 @@ public class FieldState
         newEnvironment[positionToMove] = bloblin;
         bloblin.Position = positionToMove;
 
-        DebugHelper.LogMovement($"топаем на [{positionToMove.X};{positionToMove.Y}]");
+        DebugHelper.LogMovement($"топаем на {positionToMove}");
         return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
     }
 }

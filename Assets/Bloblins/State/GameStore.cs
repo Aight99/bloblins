@@ -1,12 +1,12 @@
 using System;
-using System.Collections.Generic;
 
 public class GameStore
 {
     private GameState state;
     public GameState State => state;
 
-    public event Action<GameState> OnStateChanged;
+    public event Action OnStateChanged;
+    public event Action OnBloblinSelectionChanged;
 
     public GameStore(GameState initialState)
     {
@@ -15,11 +15,24 @@ public class GameStore
 
     public void Send(GameAction action)
     {
+        var oldSelectedBloblinPosition = state.SelectedBloblin?.Position;
         var newState = GameReducer.Reduce(state, action);
         if (newState != state)
         {
             state = newState;
-            OnStateChanged?.Invoke(state);
+            NotifySelectionChanged(oldSelectedBloblinPosition);
+            OnStateChanged?.Invoke();
+        }
+    }
+
+    private void NotifySelectionChanged(CellPosition? oldPosition)
+    {
+        var newPosition = state.SelectedBloblin?.Position;
+        var isBloblinMoved = oldPosition != newPosition;
+
+        if (isBloblinMoved)
+        {
+            OnBloblinSelectionChanged?.Invoke();
         }
     }
 }

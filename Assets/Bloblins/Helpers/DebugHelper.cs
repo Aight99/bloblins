@@ -51,4 +51,9 @@ public static class DebugHelper
     {
         Log(MessageType.Yippee, message);
     }
+
+    public static void LogFiasco(string message)
+    {
+        Log(MessageType.Fiasco, message);
+    }
 }

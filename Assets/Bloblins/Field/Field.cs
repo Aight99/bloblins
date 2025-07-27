@@ -39,11 +39,13 @@ public class Field : MonoBehaviour
     private Dictionary<CellPosition, GameObject> entityVisuals =
         new Dictionary<CellPosition, GameObject>();
     private Dictionary<CellType, GameObject> cellPrefabs = new Dictionary<CellType, GameObject>();
+    private HashSet<Cell> highlightedCells = new HashSet<Cell>();
 
     public void Initialize(GameStore store)
     {
         this.store = store;
         store.OnStateChanged += OnStateChanged;
+        store.OnBloblinSelectionChanged += OnBloblinSelectionChanged;
     }
 
     private void Awake()
@@ -59,9 +61,51 @@ public class Field : MonoBehaviour
         CreateGrid();
     }
 
-    private void OnStateChanged(GameState state)
+    private void OnBloblinSelectionChanged()
     {
-        var field = state.Field;
+        ClearHighlightedCells();
+        HighlightCells();
+    }
+
+    private void ClearHighlightedCells()
+    {
+        foreach (var cell in highlightedCells)
+        {
+            cell.SetHighlight(false);
+        }
+
+        highlightedCells.Clear();
+    }
+
+    private void HighlightCells()
+    {
+        var selectedBloblin = store.State.SelectedBloblin;
+        if (selectedBloblin != null)
+        {
+            var moveRange = selectedBloblin.MoveRange;
+            for (int x = -moveRange; x <= moveRange; x++)
+            {
+                for (int y = -moveRange; y <= moveRange; y++)
+                {
+                    var newX = selectedBloblin.Position.X + x;
+                    var newY = selectedBloblin.Position.Y + y;
+                    if (newX < 0 || newX >= width || newY < 0 || newY >= height)
+                        continue;
+
+                    var cell = cells[newX, newY];
+                    if (cell != null)
+                    {
+                        highlightedCells.Add(cell);
+                        cell.SetHighlight(true);
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnStateChanged()
+    {
+        var field = store.State.Field;
 
         if (width != field.Width || height != field.Height)
         {
