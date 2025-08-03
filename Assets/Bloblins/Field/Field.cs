@@ -99,6 +99,8 @@ public class Field : MonoBehaviour
                         continue;
                     if (!bloblin.CanMoveTo(bloblin.Position, newPosition))
                         continue;
+                    if (store.State.Field.EnvironmentObjects.ContainsKey(newPosition))
+                        continue;
 
                     var cell = cells[newPosition.X, newPosition.Y];
                     HighlightCell(cell);
