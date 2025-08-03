@@ -14,7 +14,7 @@ public class Field : MonoBehaviour
     [Space(5)]
     [Header("Entity Prefabs")]
     [SerializeField]
-    private GameObject bloblinVisualPrefab;
+    private GameObject creatureVisualPrefab;
 
     [SerializeField]
     private GameObject itemVisualPrefab;
@@ -79,34 +79,45 @@ public class Field : MonoBehaviour
 
     private void HighlightCells()
     {
-        var selectedBloblin = store.State.SelectedBloblin;
-        if (selectedBloblin != null)
+        var selectedObject = store.State.SelectedObject;
+
+        if (selectedObject is IBloblin bloblin)
         {
-            var moveRange = selectedBloblin.MoveRange;
+            var moveRange = bloblin.MoveRange;
             for (int x = -moveRange; x <= moveRange; x++)
             {
                 for (int y = -moveRange; y <= moveRange; y++)
                 {
                     var newPosition = new CellPosition(
-                        selectedBloblin.Position.X + x,
-                        selectedBloblin.Position.Y + y
+                        bloblin.Position.X + x,
+                        bloblin.Position.Y + y
                     );
 
                     if (!store.State.Field.CellTypes.ContainsKey(newPosition))
                         continue;
                     if (!store.State.Field.CellTypes[newPosition].IsWalkable())
                         continue;
-                    if (!selectedBloblin.CanMoveTo(selectedBloblin.Position, newPosition))
+                    if (!bloblin.CanMoveTo(bloblin.Position, newPosition))
                         continue;
 
                     var cell = cells[newPosition.X, newPosition.Y];
-                    if (cell != null)
-                    {
-                        highlightedCells.Add(cell);
-                        cell.SetHighlight(true);
-                    }
+                    HighlightCell(cell);
                 }
             }
+        }
+        else if (selectedObject is IEnvironmentObject objectOnCell)
+        {
+            var cell = cells[objectOnCell.Position.X, objectOnCell.Position.Y];
+            HighlightCell(cell);
+        }
+    }
+
+    private void HighlightCell(Cell cell)
+    {
+        if (cell != null)
+        {
+            highlightedCells.Add(cell);
+            cell.SetHighlight(true);
         }
     }
 
@@ -200,15 +211,15 @@ public class Field : MonoBehaviour
             GameObject prefab = null;
             string name = "";
 
-            if (pair.Value is IBloblin bloblin)
+            if (pair.Value is ICreature creature)
             {
-                prefab = bloblinVisualPrefab;
-                name = $"Bloblin_{bloblin.Name}_{pair.Key.X}_{pair.Key.Y}";
+                prefab = creatureVisualPrefab;
+                name = $"Creature_{creature.Name}_{pair.Key.X}_{pair.Key.Y}";
             }
             else if (pair.Value is Item item)
             {
                 prefab = itemVisualPrefab;
-                name = $"Item_{item.Type}_{pair.Key.X}_{pair.Key.Y}";
+                name = $"Item_{item.Name}_{pair.Key.X}_{pair.Key.Y}";
             }
 
             if (prefab != null)
@@ -241,11 +252,11 @@ public class Field : MonoBehaviour
             entityVisuals.Remove(pos);
         }
 
-        foreach (var bloblin in fieldState.Bloblins)
+        foreach (var creature in fieldState.Creatures)
         {
-            if (entityVisuals.TryGetValue(bloblin.Position, out var visual))
+            if (entityVisuals.TryGetValue(creature.Position, out var visual))
             {
-                Vector3 targetPos = GetWorldPosition(bloblin);
+                Vector3 targetPos = GetWorldPosition(creature);
                 visual.transform.position = targetPos;
             }
         }

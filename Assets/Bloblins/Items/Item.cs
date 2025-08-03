@@ -3,12 +3,12 @@ using UnityEngine;
 public class Item : IEnvironmentObject
 {
     public CellPosition Position { get; set; }
-    public string Type { get; private set; }
+    public string Name { get; private set; }
     public float DrawLayer => Layers.Items;
 
-    public Item(string type, CellPosition position)
+    public Item(string name, CellPosition position)
     {
-        Type = type;
+        Name = name;
         Position = position;
     }
 }

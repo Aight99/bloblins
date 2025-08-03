@@ -85,7 +85,7 @@ public class LevelPreviewWindow : EditorWindow
         bloblinStyle.fontStyle = FontStyle.Bold;
 
         itemStyle = new GUIStyle();
-        itemStyle.normal.textColor = Color.yellow;
+        itemStyle.normal.textColor = Color.black;
         itemStyle.alignment = TextAnchor.MiddleCenter;
         itemStyle.fontSize = 10;
         itemStyle.fontStyle = FontStyle.Bold;
@@ -151,7 +151,7 @@ public class LevelPreviewWindow : EditorWindow
                 cellSize,
                 cellSize
             );
-            GUI.Label(itemRect, "I", itemStyle);
+            GUI.Label(itemRect, "O", itemStyle);
         }
     }
 
@@ -160,7 +160,7 @@ public class LevelPreviewWindow : EditorWindow
         switch (cellType)
         {
             case CellType.Ground:
-                return new Color(0.2f, 0.8f, 0.2f);
+                return new Color(0.267f, 0.792f, 0.565f);
             case CellType.Water:
                 return new Color(0.2f, 0.2f, 0.8f);
             case CellType.Void:

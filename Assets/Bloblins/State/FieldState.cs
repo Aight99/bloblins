@@ -5,21 +5,21 @@ public class FieldState
     public readonly int Width;
     public readonly int Height;
     public readonly Dictionary<CellPosition, IEnvironmentObject> EnvironmentObjects;
-    public readonly List<IBloblin> Bloblins;
+    public readonly List<ICreature> Creatures;
     public readonly Dictionary<CellPosition, CellType> CellTypes;
 
     public FieldState(
         int width,
         int height,
         Dictionary<CellPosition, IEnvironmentObject> environment,
-        List<IBloblin> bloblins,
+        List<ICreature> creatures,
         Dictionary<CellPosition, CellType> cellTypes
     )
     {
         Width = width;
         Height = height;
         EnvironmentObjects = environment;
-        Bloblins = bloblins;
+        Creatures = creatures;
         CellTypes = cellTypes;
     }
 
@@ -28,7 +28,7 @@ public class FieldState
         Width = 0;
         Height = 0;
         EnvironmentObjects = new Dictionary<CellPosition, IEnvironmentObject>();
-        Bloblins = new List<IBloblin>();
+        Creatures = new List<ICreature>();
         CellTypes = new Dictionary<CellPosition, CellType>();
     }
 
@@ -39,20 +39,13 @@ public class FieldState
             newEnvironment.Remove(position);
         else
             newEnvironment[position] = environment;
-        return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
+        return new FieldState(Width, Height, newEnvironment, Creatures, CellTypes);
     }
 
     public FieldState WithMovedBloblin(IBloblin bloblin, CellPosition selectedCell)
     {
-        var isReachable = bloblin.CanMoveTo(bloblin.Position, selectedCell);
-        var isWalkable = CellTypes[selectedCell].IsWalkable();
-
-        if (!isReachable || !isWalkable)
+        if (!CheckIsReachable(bloblin, selectedCell))
         {
-            DebugHelper.Log(
-                DebugHelper.MessageType.Fiasco,
-                $"нельзя пойти на {selectedCell} (тип: {CellTypes[selectedCell]})"
-            );
             return this;
         }
 
@@ -62,6 +55,41 @@ public class FieldState
         bloblin.Position = selectedCell;
 
         DebugHelper.LogMovement($"топаем на {selectedCell}");
-        return new FieldState(Width, Height, newEnvironment, Bloblins, CellTypes);
+        return new FieldState(Width, Height, newEnvironment, Creatures, CellTypes);
+    }
+
+    private bool CheckIsReachable(IBloblin bloblin, CellPosition selectedCell)
+    {
+        var isReachable = bloblin.CanMoveTo(bloblin.Position, selectedCell);
+        var isWalkable = CellTypes[selectedCell].IsWalkable();
+        var isOccupied = EnvironmentObjects.ContainsKey(selectedCell);
+
+        if (!isReachable)
+        {
+            DebugHelper.Log(
+                DebugHelper.MessageType.Fiasco,
+                $"нельзя пойти на {selectedCell}, слишком далеко"
+            );
+            return false;
+        }
+
+        if (!isWalkable)
+        {
+            DebugHelper.Log(
+                DebugHelper.MessageType.Fiasco,
+                $"нельзя пойти на {selectedCell}, {CellTypes[selectedCell]}"
+            );
+            return false;
+        }
+
+        if (isOccupied)
+        {
+            DebugHelper.Log(
+                DebugHelper.MessageType.Fiasco,
+                $"нельзя пойти на {selectedCell}, занято"
+            );
+            return false;
+        }
+        return true;
     }
 }

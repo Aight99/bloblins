@@ -214,8 +214,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundCellPrefab: {fileID: 6366714227974038124, guid: 34bddf6c280ec4efab2ec5dff13666cd, type: 3}
   waterCellPrefab: {fileID: 6366714227974038124, guid: 7cd10fff8c526447b968c98b6facfd5b, type: 3}
-  bloblinVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
-  itemVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
+  creatureVisualPrefab: {fileID: 132704146587045183, guid: f4ef9b368ab7a4a5fb085c5f17b937c1, type: 3}
+  itemVisualPrefab: {fileID: 6366714227974038124, guid: 169256241f6714986ad6ced23fb1f56e, type: 3}
   cellsXShift: 1
   cellsZShift: 1
   gizmoHeight: 0.5

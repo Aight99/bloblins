@@ -1,10 +1,9 @@
 using System;
 
-public interface IBloblin : IEnvironmentObject
+public interface ICreature : IEnvironmentObject
 {
-    string Name { get; }
     int MoveRange { get; }
-    float IEnvironmentObject.DrawLayer => Layers.Bloblins;
+    float IEnvironmentObject.DrawLayer => Layers.Creatures;
     bool CanMoveTo(CellPosition fromPosition, CellPosition toPosition)
     {
         var xShift = Math.Abs(fromPosition.X - toPosition.X);
@@ -13,3 +12,5 @@ public interface IBloblin : IEnvironmentObject
         return distance <= MoveRange;
     }
 }
+
+public interface IBloblin : ICreature { }

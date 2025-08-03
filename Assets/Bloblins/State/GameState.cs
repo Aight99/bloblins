@@ -1,24 +1,16 @@
 public class GameState
 {
     public readonly FieldState Field;
-    public readonly IBloblin SelectedBloblin;
+    public readonly IEnvironmentObject SelectedObject;
 
-    public GameState(FieldState field = null, IBloblin selectedBloblin = null)
+    public GameState(FieldState field = null, IEnvironmentObject selectedObject = null)
     {
         Field = field ?? new FieldState();
-        SelectedBloblin = selectedBloblin;
+        SelectedObject = selectedObject;
     }
 
-    public GameState WithField(FieldState field) => new(field, SelectedBloblin);
+    public GameState WithField(FieldState field) => new(field, SelectedObject);
 
-    public GameState WithSelectedBloblin(IBloblin bloblin)
-    {
-        if (bloblin == SelectedBloblin)
-        {
-            DebugHelper.LogYippee("Снимаем выделение");
-            return new(Field, null);
-        }
-        DebugHelper.LogYippee($"Выбран {bloblin.Name}");
-        return new(Field, bloblin);
-    }
+    public GameState WithSelectedObject(IEnvironmentObject selectedObject) =>
+        new(Field, selectedObject);
 }

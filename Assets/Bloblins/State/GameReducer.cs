@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
 public static class GameReducer
 {
     public static GameState Reduce(GameState state, GameAction action)
@@ -23,25 +19,44 @@ public static class GameReducer
     {
         var field = state.Field;
         var position = action.Position;
-
         field.EnvironmentObjects.TryGetValue(position, out var objectOnCell);
 
-        if (objectOnCell != null)
+        if (state.SelectedObject == null)
         {
-            if (objectOnCell is IBloblin bloblin)
-            {
-                return state.WithSelectedBloblin(bloblin);
-            }
-            else if (objectOnCell is Item item)
-            {
-                DebugHelper.LogYippee("это чевота");
-            }
-        }
-        else if (state.SelectedBloblin != null)
-        {
-            return state.WithField(field.WithMovedBloblin(state.SelectedBloblin, position));
+            return HandleObjectSelection(state, objectOnCell);
         }
 
+        if (state.SelectedObject.Position == position)
+        {
+            return HandleObjectDeselection(state);
+        }
+
+        if (state.SelectedObject is IBloblin bloblin)
+        {
+            return state.WithField(field.WithMovedBloblin(bloblin, position));
+        }
+        else if (objectOnCell != null)
+        {
+            DebugHelper.LogYippee($"Выбираем {objectOnCell.Name}");
+            return state.WithSelectedObject(objectOnCell);
+        }
+
+        return HandleObjectDeselection(state);
+    }
+
+    private static GameState HandleObjectSelection(GameState state, IEnvironmentObject objectOnCell)
+    {
+        if (objectOnCell != null)
+        {
+            DebugHelper.LogYippee($"Выбираем {objectOnCell.Name}");
+            return state.WithSelectedObject(objectOnCell);
+        }
         return state;
+    }
+
+    private static GameState HandleObjectDeselection(GameState state)
+    {
+        DebugHelper.LogFiasco("Снимаем выделение");
+        return state.WithSelectedObject(null);
     }
 }

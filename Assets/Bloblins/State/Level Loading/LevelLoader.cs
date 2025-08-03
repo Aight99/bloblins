@@ -29,7 +29,7 @@ public static class LevelLoader
     private static GameState CreateGameStateFromConfig(LevelConfig config)
     {
         var objects = new Dictionary<CellPosition, IEnvironmentObject>();
-        var bloblins = new List<IBloblin>();
+        var creatures = new List<ICreature>();
         var cellTypes = new Dictionary<CellPosition, CellType>();
 
         for (int x = 0; x < config.Width; x++)
@@ -45,21 +45,21 @@ public static class LevelLoader
         foreach (var bloblinConfig in config.Bloblins)
         {
             var position = new CellPosition(bloblinConfig.X, bloblinConfig.Y);
-            IBloblin bloblin = null;
+            ICreature creature = null;
 
             switch (bloblinConfig.Type)
             {
                 case BloblinType.Baldush:
-                    bloblin = new Baldush(position);
+                    creature = new Baldush(position);
                     break;
                 default:
                     throw new System.NotImplementedException();
             }
 
-            if (bloblin != null)
+            if (creature != null)
             {
-                objects[position] = bloblin;
-                bloblins.Add(bloblin);
+                objects[position] = creature;
+                creatures.Add(creature);
             }
         }
 
@@ -69,7 +69,7 @@ public static class LevelLoader
             objects[position] = new Item(itemConfig.Type, position);
         }
 
-        var fieldState = new FieldState(config.Width, config.Height, objects, bloblins, cellTypes);
+        var fieldState = new FieldState(config.Width, config.Height, objects, creatures, cellTypes);
         return new GameState(fieldState);
     }
 }

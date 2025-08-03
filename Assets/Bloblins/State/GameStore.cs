@@ -15,22 +15,22 @@ public class GameStore
 
     public void Send(GameAction action)
     {
-        var oldSelectedBloblinPosition = state.SelectedBloblin?.Position;
+        var oldSelectedObjectPosition = state.SelectedObject?.Position;
         var newState = GameReducer.Reduce(state, action);
         if (newState != state)
         {
             state = newState;
-            NotifySelectionChanged(oldSelectedBloblinPosition);
+            NotifySelectionChanged(oldSelectedObjectPosition);
             OnStateChanged?.Invoke();
         }
     }
 
     private void NotifySelectionChanged(CellPosition? oldPosition)
     {
-        var newPosition = state.SelectedBloblin?.Position;
-        var isBloblinMoved = oldPosition != newPosition;
+        var newPosition = state.SelectedObject?.Position;
+        var isObjectMoved = oldPosition != newPosition;
 
-        if (isBloblinMoved)
+        if (isObjectMoved)
         {
             OnBloblinSelectionChanged?.Invoke();
         }
