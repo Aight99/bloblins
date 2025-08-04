@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
         store = new GameStore(initialState);
 
-        store.OnStateChanged += OnStateChanged;
+        store.OnTurnInfoChanged += OnTurnInfoChanged;
 
         field.Initialize(store);
     }
@@ -23,9 +23,8 @@ public class GameManager : MonoBehaviour
         store.Send(new LoadLevelAction("Green Hills"));
     }
 
-    private void OnStateChanged()
+    private void OnTurnInfoChanged()
     {
-        // Здесь можно добавить логику, реагирующую на изменение состояния
-        // Например, проверку условий победы, сохранение прогресса и т.д.
+        store.Send(new HandleTurnChangeAction());
     }
 }

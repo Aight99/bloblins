@@ -19,3 +19,5 @@ public class LoadLevelAction : GameAction
         LevelName = levelName;
     }
 }
+
+public class HandleTurnChangeAction : GameAction { }

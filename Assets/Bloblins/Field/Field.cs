@@ -44,8 +44,7 @@ public class Field : MonoBehaviour
     public void Initialize(GameStore store)
     {
         this.store = store;
-        store.OnStateChanged += OnStateChanged;
-        store.OnBloblinSelectionChanged += OnBloblinSelectionChanged;
+        store.OnRedrawFieldNeeded += RedrawField;
     }
 
     private void Awake()
@@ -61,59 +60,6 @@ public class Field : MonoBehaviour
         CreateGrid();
     }
 
-    private void OnBloblinSelectionChanged()
-    {
-        ClearHighlightedCells();
-        HighlightCells();
-    }
-
-    private void ClearHighlightedCells()
-    {
-        foreach (var cell in highlightedCells)
-        {
-            cell.SetHighlight(false);
-        }
-
-        highlightedCells.Clear();
-    }
-
-    private void HighlightCells()
-    {
-        var selectedObject = store.State.SelectedObject;
-
-        if (selectedObject is IBloblin bloblin)
-        {
-            var moveRange = bloblin.MoveRange;
-            for (int x = -moveRange; x <= moveRange; x++)
-            {
-                for (int y = -moveRange; y <= moveRange; y++)
-                {
-                    var newPosition = new CellPosition(
-                        bloblin.Position.X + x,
-                        bloblin.Position.Y + y
-                    );
-
-                    if (!store.State.Field.CellTypes.ContainsKey(newPosition))
-                        continue;
-                    if (!store.State.Field.CellTypes[newPosition].IsWalkable())
-                        continue;
-                    if (!bloblin.CanMoveTo(bloblin.Position, newPosition))
-                        continue;
-                    if (store.State.Field.EnvironmentObjects.ContainsKey(newPosition))
-                        continue;
-
-                    var cell = cells[newPosition.X, newPosition.Y];
-                    HighlightCell(cell);
-                }
-            }
-        }
-        else if (selectedObject is IEnvironmentObject objectOnCell)
-        {
-            var cell = cells[objectOnCell.Position.X, objectOnCell.Position.Y];
-            HighlightCell(cell);
-        }
-    }
-
     private void HighlightCell(Cell cell)
     {
         if (cell != null)
@@ -123,7 +69,7 @@ public class Field : MonoBehaviour
         }
     }
 
-    private void OnStateChanged()
+    private void RedrawField()
     {
         var field = store.State.Field;
 
@@ -136,6 +82,7 @@ public class Field : MonoBehaviour
         }
 
         UpdateEntityVisuals(field);
+        RedrawHighlightedCells();
     }
 
     private void ClearGrid()
@@ -261,6 +208,59 @@ public class Field : MonoBehaviour
                 Vector3 targetPos = GetWorldPosition(creature);
                 visual.transform.position = targetPos;
             }
+        }
+    }
+
+    private void RedrawHighlightedCells()
+    {
+        ClearHighlightedCells();
+        HighlightCells();
+    }
+
+    private void ClearHighlightedCells()
+    {
+        foreach (var cell in highlightedCells)
+        {
+            cell.SetHighlight(false);
+        }
+
+        highlightedCells.Clear();
+    }
+
+    private void HighlightCells()
+    {
+        var selectedObject = store.State.SelectedObject;
+
+        if (selectedObject is IBloblin bloblin)
+        {
+            var moveRange = bloblin.MoveRange;
+            for (int x = -moveRange; x <= moveRange; x++)
+            {
+                for (int y = -moveRange; y <= moveRange; y++)
+                {
+                    var newPosition = new CellPosition(
+                        bloblin.Position.X + x,
+                        bloblin.Position.Y + y
+                    );
+
+                    if (!store.State.Field.CellTypes.ContainsKey(newPosition))
+                        continue;
+                    if (!store.State.Field.CellTypes[newPosition].IsWalkable())
+                        continue;
+                    if (!bloblin.CanMoveTo(bloblin.Position, newPosition))
+                        continue;
+                    if (store.State.Field.EnvironmentObjects.ContainsKey(newPosition))
+                        continue;
+
+                    var cell = cells[newPosition.X, newPosition.Y];
+                    HighlightCell(cell);
+                }
+            }
+        }
+        else if (selectedObject is IEnvironmentObject objectOnCell)
+        {
+            var cell = cells[objectOnCell.Position.X, objectOnCell.Position.Y];
+            HighlightCell(cell);
         }
     }
 

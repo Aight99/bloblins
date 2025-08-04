@@ -10,6 +10,9 @@ public static class GameReducer
             case CellClickAction cellClick:
                 return HandleCellClick(state, cellClick);
 
+            case HandleTurnChangeAction:
+                return HandleTurnChange(state);
+
             default:
                 throw new System.NotImplementedException();
         }
@@ -33,7 +36,7 @@ public static class GameReducer
 
         if (state.SelectedObject is IBloblin bloblin)
         {
-            return state.WithField(field.WithMovedBloblin(bloblin, position));
+            return HandleBloblinMove(state, bloblin, position);
         }
         else if (objectOnCell != null)
         {
@@ -42,6 +45,22 @@ public static class GameReducer
         }
 
         return HandleObjectDeselection(state);
+    }
+
+    private static GameState HandleBloblinMove(
+        GameState state,
+        IBloblin bloblin,
+        CellPosition position
+    )
+    {
+        var newField = state.Field.WithMovedBloblin(bloblin, position);
+        if (newField == state.Field)
+        {
+            return state;
+        }
+
+        var newTurnInfo = state.TurnInfo.WithReducedEnergy();
+        return state.WithField(newField).WithTurnInfo(newTurnInfo);
     }
 
     private static GameState HandleObjectSelection(GameState state, IEnvironmentObject objectOnCell)
@@ -58,5 +77,16 @@ public static class GameReducer
     {
         DebugHelper.LogFiasco("Снимаем выделение");
         return state.WithSelectedObject(null);
+    }
+
+    private static GameState HandleTurnChange(GameState state)
+    {
+        if (state.TurnInfo.IsPhaseCompleted)
+        {
+            DebugHelper.LogYippee("Смена хода");
+            return state.WithTurnInfo(new TurnState());
+        }
+
+        return state;
     }
 }

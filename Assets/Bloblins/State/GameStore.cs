@@ -5,8 +5,8 @@ public class GameStore
     private GameState state;
     public GameState State => state;
 
-    public event Action OnStateChanged;
-    public event Action OnBloblinSelectionChanged;
+    public event Action OnRedrawFieldNeeded;
+    public event Action OnTurnInfoChanged;
 
     public GameStore(GameState initialState)
     {
@@ -15,24 +15,22 @@ public class GameStore
 
     public void Send(GameAction action)
     {
-        var oldSelectedObjectPosition = state.SelectedObject?.Position;
+        var oldState = state;
         var newState = GameReducer.Reduce(state, action);
         if (newState != state)
         {
             state = newState;
-            NotifySelectionChanged(oldSelectedObjectPosition);
-            OnStateChanged?.Invoke();
+            OnRedrawFieldNeeded?.Invoke();
+            // FIXME: Надо что-то другое сделать
+            NotifyTurnInfoChanged(oldState.TurnInfo);
         }
     }
 
-    private void NotifySelectionChanged(CellPosition? oldPosition)
+    private void NotifyTurnInfoChanged(TurnState oldTurnState)
     {
-        var newPosition = state.SelectedObject?.Position;
-        var isObjectMoved = oldPosition != newPosition;
-
-        if (isObjectMoved)
+        if (oldTurnState != state.TurnInfo)
         {
-            OnBloblinSelectionChanged?.Invoke();
+            OnTurnInfoChanged?.Invoke();
         }
     }
 }
