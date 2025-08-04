@@ -1,24 +1,29 @@
 public static class GameReducer
 {
-    public static GameState Reduce(GameState state, GameAction action)
+    public static GameAction Reduce(ref GameState state, GameAction action)
     {
         switch (action)
         {
+            case null:
+                return null;
+
             case LoadLevelAction loadLevel:
-                return LevelLoader.LoadLevel(loadLevel.LevelName);
+                state = LevelLoader.LoadLevel(loadLevel.LevelName);
+                return null;
 
             case CellClickAction cellClick:
-                return HandleCellClick(state, cellClick);
+                return HandleCellClick(ref state, cellClick);
 
             case HandleTurnChangeAction:
-                return HandleTurnChange(state);
+                HandleTurnChange(ref state);
+                return null;
 
             default:
                 throw new System.NotImplementedException();
         }
     }
 
-    private static GameState HandleCellClick(GameState state, CellClickAction action)
+    private static GameAction HandleCellClick(ref GameState state, CellClickAction action)
     {
         var field = state.Field;
         var position = action.Position;
@@ -26,29 +31,33 @@ public static class GameReducer
 
         if (state.SelectedObject == null)
         {
-            return HandleObjectSelection(state, objectOnCell);
+            HandleObjectSelection(ref state, objectOnCell);
+            return null;
         }
 
         if (state.SelectedObject.Position == position)
         {
-            return HandleObjectDeselection(state);
+            HandleObjectDeselection(ref state);
+            return null;
         }
 
         if (state.SelectedObject is IBloblin bloblin)
         {
-            return HandleBloblinMove(state, bloblin, position);
+            return HandleBloblinMove(ref state, bloblin, position);
         }
         else if (objectOnCell != null)
         {
             DebugHelper.LogYippee($"Выбираем {objectOnCell.Name}");
-            return state.WithSelectedObject(objectOnCell);
+            state = state.WithSelectedObject(objectOnCell);
+            return null;
         }
 
-        return HandleObjectDeselection(state);
+        HandleObjectDeselection(ref state);
+        return null;
     }
 
-    private static GameState HandleBloblinMove(
-        GameState state,
+    private static GameAction HandleBloblinMove(
+        ref GameState state,
         IBloblin bloblin,
         CellPosition position
     )
@@ -56,37 +65,35 @@ public static class GameReducer
         var newField = state.Field.WithMovedBloblin(bloblin, position);
         if (newField == state.Field)
         {
-            return state;
+            return null;
         }
 
-        var newTurnInfo = state.TurnInfo.WithReducedEnergy();
-        return state.WithField(newField).WithTurnInfo(newTurnInfo);
+        state = state.WithField(newField);
+        return new HandleTurnChangeAction();
     }
 
-    private static GameState HandleObjectSelection(GameState state, IEnvironmentObject objectOnCell)
+    private static void HandleObjectSelection(ref GameState state, IEnvironmentObject objectOnCell)
     {
         if (objectOnCell != null)
         {
             DebugHelper.LogYippee($"Выбираем {objectOnCell.Name}");
-            return state.WithSelectedObject(objectOnCell);
+            state = state.WithSelectedObject(objectOnCell);
         }
-        return state;
     }
 
-    private static GameState HandleObjectDeselection(GameState state)
+    private static void HandleObjectDeselection(ref GameState state)
     {
         DebugHelper.LogFiasco("Снимаем выделение");
-        return state.WithSelectedObject(null);
+        state = state.WithSelectedObject(null);
     }
 
-    private static GameState HandleTurnChange(GameState state)
+    private static void HandleTurnChange(ref GameState state)
     {
+        state = state.WithTurnInfo(state.TurnInfo.WithReducedEnergy());
         if (state.TurnInfo.IsPhaseCompleted)
         {
             DebugHelper.LogYippee("Смена хода");
-            return state.WithTurnInfo(new TurnState());
+            state = state.WithTurnInfo(new TurnState());
         }
-
-        return state;
     }
 }

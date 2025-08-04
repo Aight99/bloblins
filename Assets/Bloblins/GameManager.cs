@@ -9,11 +9,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        var initialState = new GameState();
+        var initialState = new GameState(null, null, null);
 
         store = new GameStore(initialState);
-
-        store.OnTurnInfoChanged += OnTurnInfoChanged;
 
         field.Initialize(store);
     }
@@ -21,10 +19,5 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         store.Send(new LoadLevelAction("Green Hills"));
-    }
-
-    private void OnTurnInfoChanged()
-    {
-        store.Send(new HandleTurnChangeAction());
     }
 }

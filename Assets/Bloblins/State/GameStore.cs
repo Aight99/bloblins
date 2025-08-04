@@ -6,7 +6,6 @@ public class GameStore
     public GameState State => state;
 
     public event Action OnRedrawFieldNeeded;
-    public event Action OnTurnInfoChanged;
 
     public GameStore(GameState initialState)
     {
@@ -16,21 +15,21 @@ public class GameStore
     public void Send(GameAction action)
     {
         var oldState = state;
-        var newState = GameReducer.Reduce(state, action);
-        if (newState != state)
+
+        HadleAction(action);
+
+        if (oldState != state)
         {
-            state = newState;
             OnRedrawFieldNeeded?.Invoke();
-            // FIXME: Надо что-то другое сделать
-            NotifyTurnInfoChanged(oldState.TurnInfo);
         }
     }
 
-    private void NotifyTurnInfoChanged(TurnState oldTurnState)
+    private void HadleAction(GameAction action)
     {
-        if (oldTurnState != state.TurnInfo)
+        var feedback = GameReducer.Reduce(ref state, action);
+        while (feedback != null)
         {
-            OnTurnInfoChanged?.Invoke();
+            feedback = GameReducer.Reduce(ref state, feedback);
         }
     }
 }

@@ -70,6 +70,6 @@ public static class LevelLoader
         }
 
         var fieldState = new FieldState(config.Width, config.Height, objects, creatures, cellTypes);
-        return new GameState(fieldState);
+        return new GameState(fieldState, null, null);
     }
 }
