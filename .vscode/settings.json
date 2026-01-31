@@ -51,5 +51,23 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Bloblins.sln"
+    "search.exclude": {
+        "**/*.meta": true,
+        "**/*.csproj": true,
+        "**/*.sln": true,
+        "**/Library": true,
+        "**/Temp": true,
+        "**/obj": true,
+        "**/Logs": true,
+        "**/Build": true,
+        "**/.vs": true
+    },
+    "files.watcherExclude": {
+        "**/Library/**": true,
+        "**/Temp/**": true,
+        "**/obj/**": true,
+        "**/Logs/**": true,
+        "**/Build/**": true
+    },
+    "dotnet.defaultSolution": "bloblins.sln"
 }
