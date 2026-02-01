@@ -5,11 +5,16 @@ using UnityEngine;
 
 public class AnimationQueue : MonoBehaviour
 {
+    [Header("Default Move Animation")]
+    [SerializeField]
+    private MoveAnimationSettings defaultMoveSettings = new MoveAnimationSettings();
+
     private readonly Queue<IAnimation> animations = new Queue<IAnimation>();
     private bool isPlaying = false;
     private Action onQueueComplete;
 
     public bool IsPlaying => isPlaying;
+    public MoveAnimationSettings DefaultMoveSettings => defaultMoveSettings;
 
     public void EnqueueAnimation(IAnimation animation)
     {

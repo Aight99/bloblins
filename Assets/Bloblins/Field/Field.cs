@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(AnimationQueue))]
 public class Field : MonoBehaviour
 {
     [Header("Cell Prefabs")]
@@ -25,11 +26,6 @@ public class Field : MonoBehaviour
 
     [SerializeField]
     private float cellsZShift = 1f;
-
-    [Space(5)]
-    [Header("Animation")]
-    [SerializeField]
-    private float moveSpeed = 5f;
 
     [Space(5)]
     [Header("Debug")]
@@ -58,9 +54,7 @@ public class Field : MonoBehaviour
             [CellType.Water] = waterCellPrefab
         };
 
-        GameObject queueObject = new GameObject("AnimationQueue");
-        queueObject.transform.SetParent(transform);
-        AnimationQueue animationQueue = queueObject.AddComponent<AnimationQueue>();
+        AnimationQueue animationQueue = GetComponent<AnimationQueue>();
 
         gridManager = new GridManager(transform, cellPrefabs, GetWorldPosition, GetCellTypeFromState);
 
@@ -69,7 +63,6 @@ public class Field : MonoBehaviour
             creatureVisualPrefab,
             itemVisualPrefab,
             animationQueue,
-            moveSpeed,
             GetWorldPosition
         );
 

@@ -8,7 +8,6 @@ public class EntityVisualManager
     private readonly GameObject creatureVisualPrefab;
     private readonly GameObject itemVisualPrefab;
     private readonly AnimationQueue animationQueue;
-    private readonly float moveSpeed;
     private readonly Func<IEnvironmentObject, Vector3> getWorldPositionForObject;
 
     private readonly Dictionary<CellPosition, GameObject> entityVisuals =
@@ -19,7 +18,6 @@ public class EntityVisualManager
         GameObject creatureVisualPrefab,
         GameObject itemVisualPrefab,
         AnimationQueue animationQueue,
-        float moveSpeed,
         Func<IEnvironmentObject, Vector3> getWorldPositionForObject
     )
     {
@@ -27,7 +25,6 @@ public class EntityVisualManager
         this.creatureVisualPrefab = creatureVisualPrefab;
         this.itemVisualPrefab = itemVisualPrefab;
         this.animationQueue = animationQueue;
-        this.moveSpeed = moveSpeed;
         this.getWorldPositionForObject = getWorldPositionForObject;
     }
 
@@ -108,12 +105,24 @@ public class EntityVisualManager
             );
 
             Vector3 targetPos = getWorldPositionForObject(info.EnvironmentObject);
-            var animation = new MoveAnimation(info.Visual.transform, targetPos, moveSpeed);
+            MoveAnimationSettings moveSettings = GetMoveSettings(info.Visual);
+            var animation = new MoveAnimation(info.Visual.transform, targetPos, moveSettings);
             animationQueue.EnqueueAnimation(animation);
 
             entityVisuals.Remove(info.OldPosition);
             entityVisuals[info.NewPosition] = info.Visual;
         }
+    }
+
+    private MoveAnimationSettings GetMoveSettings(GameObject visual)
+    {
+        var animatable = visual.GetComponent<AnimatableVisual>();
+        if (animatable != null)
+        {
+            return animatable.MoveSettings;
+        }
+
+        return animationQueue.DefaultMoveSettings;
     }
 
     private void CreateNewEntityVisuals(FieldState fieldState, Action<CellPosition> onCellClicked)
