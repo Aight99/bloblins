@@ -7,12 +7,14 @@ public static class DebugHelper
         Movement,
         Yippee,
         Fiasco,
+        Animation,
     }
 
     private static readonly Color Purple = new(0.47f, 0.34f, 0.94f);
     private static readonly Color Yellow = new(0.98f, 0.84f, 0.34f);
     private static readonly Color Red = new(1f, 0.34f, 0.34f);
     private static readonly Color Blue = new(0.34f, 0.6f, 1f);
+    private static readonly Color Green = new(0.34f, 1f, 0.34f);
 
     public static void Log(MessageType type, string message)
     {
@@ -32,6 +34,10 @@ public static class DebugHelper
             case MessageType.Fiasco:
                 prefix = "ФИАСКО";
                 colorHex = ColorUtility.ToHtmlStringRGB(Blue);
+                break;
+            case MessageType.Animation:
+                prefix = "АНИМАЦИЯ";
+                colorHex = ColorUtility.ToHtmlStringRGB(Green);
                 break;
             default:
                 prefix = "";

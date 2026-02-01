@@ -6,6 +6,8 @@ public class EntityVisual : MonoBehaviour
     private IEnvironmentObject environmentObject;
     private Action<CellPosition> onClick;
 
+    public IEnvironmentObject EnvironmentObject => environmentObject;
+
     public void Initialize(IEnvironmentObject environmentObject, Action<CellPosition> onClick)
     {
         this.environmentObject = environmentObject;
