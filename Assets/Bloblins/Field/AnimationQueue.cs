@@ -18,7 +18,6 @@ public class AnimationQueue : MonoBehaviour
 
     public void EnqueueAnimation(IAnimation animation)
     {
-        DebugHelper.Log(DebugHelper.MessageType.Animation, $"Добавляем анимацию {animation.GetType().Name}");
         animations.Enqueue(animation);
 
         if (!isPlaying)
@@ -41,7 +40,6 @@ public class AnimationQueue : MonoBehaviour
 
     private IEnumerator PlayQueue()
     {
-        DebugHelper.Log(DebugHelper.MessageType.Animation, $"Начинаем воспроизведение очереди");
         isPlaying = true;
 
         while (animations.Count > 0)
@@ -50,7 +48,6 @@ public class AnimationQueue : MonoBehaviour
             yield return animation.Play();
         }
 
-        DebugHelper.Log(DebugHelper.MessageType.Animation, $"Завершаем воспроизведение очереди");
         isPlaying = false;
         onQueueComplete?.Invoke();
     }

@@ -18,15 +18,26 @@ public class MoveAnimation : IAnimation
     {
         Vector3 startPosition = transform.position;
         float distance = Vector3.Distance(startPosition, targetPosition);
-        float duration = distance / settings.Speed;
+        float duration = settings.FixedDuration > 0f 
+            ? settings.FixedDuration 
+            : distance / settings.Speed;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
+            
             float curveValue = settings.Curve.Evaluate(t);
-            transform.position = Vector3.Lerp(startPosition, targetPosition, curveValue);
+            Vector3 position = Vector3.Lerp(startPosition, targetPosition, curveValue);
+            
+            if (settings.JumpHeight > 0f)
+            {
+                float jumpOffset = settings.JumpCurve.Evaluate(t) * settings.JumpHeight;
+                position.y += jumpOffset;
+            }
+            
+            transform.position = position;
             yield return null;
         }
 
