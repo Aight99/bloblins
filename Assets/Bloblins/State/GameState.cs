@@ -2,20 +2,20 @@ public class GameState
 {
     public readonly FieldState Field;
     public readonly IEnvironmentObject SelectedObject;
-    public readonly TurnState TurnInfo;
+    public readonly TurnQueue TurnQueue;
 
-    public GameState(FieldState field, IEnvironmentObject selectedObject, TurnState turnInfo)
+    public GameState(FieldState field, IEnvironmentObject selectedObject, TurnQueue turnQueue)
     {
         Field = field ?? new FieldState();
         SelectedObject = selectedObject;
-        TurnInfo = turnInfo ?? new TurnState(true);
+        TurnQueue = turnQueue ?? new TurnQueue();
     }
 
-    public GameState WithField(FieldState field) => new GameState(field, SelectedObject, TurnInfo);
+    public GameState WithField(FieldState field) => new(field, SelectedObject, TurnQueue);
 
     public GameState WithSelectedObject(IEnvironmentObject selectedObject) =>
-        new GameState(Field, selectedObject, TurnInfo);
+        new(Field, selectedObject, TurnQueue);
 
-    public GameState WithTurnInfo(TurnState turnInfo) =>
-        new GameState(Field, SelectedObject, turnInfo);
+    public GameState WithNextTurn() =>
+        new(Field, SelectedObject, TurnQueue.WithNextTurn());
 }

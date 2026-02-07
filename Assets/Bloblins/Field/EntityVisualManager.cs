@@ -99,11 +99,6 @@ public class EntityVisualManager
     {
         foreach (var info in movedObjects)
         {
-            DebugHelper.Log(
-                DebugHelper.MessageType.Animation,
-                $"Анимируем перемещение {info.EnvironmentObject.Name} с {info.OldPosition} на {info.NewPosition}"
-            );
-
             Vector3 targetPos = getWorldPositionForObject(info.EnvironmentObject);
             MoveAnimationSettings moveSettings = GetMoveSettings(info.Visual);
             var animation = new MoveAnimation(info.Visual.transform, targetPos, moveSettings);
@@ -187,10 +182,6 @@ public class EntityVisualManager
         {
             if (!currentPositions.Contains(pair.Key))
             {
-                DebugHelper.Log(
-                    DebugHelper.MessageType.Animation,
-                    $"Удаляем визуал на позиции {pair.Key}"
-                );
                 UnityEngine.Object.Destroy(pair.Value);
                 positionsToRemove.Add(pair.Key);
             }

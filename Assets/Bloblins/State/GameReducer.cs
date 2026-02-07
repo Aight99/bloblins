@@ -89,11 +89,7 @@ public static class GameReducer
 
     private static void HandleTurnChange(ref GameState state)
     {
-        state = state.WithTurnInfo(state.TurnInfo.WithReducedEnergy());
-        if (state.TurnInfo.IsPhaseCompleted)
-        {
-            DebugHelper.LogYippee("Смена хода");
-            state = state.WithTurnInfo(new TurnState());
-        }
+        // DebugHelper.LogYippee("Смена хода");
+        state = state.WithNextTurn();
     }
 }
