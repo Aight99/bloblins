@@ -12,6 +12,15 @@ public class EntityVisual : MonoBehaviour
     {
         this.environmentObject = environmentObject;
         this.onClick = onClick;
+
+        if (environmentObject is ICreature creature)
+        {
+            var materialLoader = GetComponent<CreatureMaterialLoader>();
+            if (materialLoader != null)
+            {
+                materialLoader.LoadMaterialForCreature(creature);
+            }
+        }
     }
 
     private void OnMouseDown()

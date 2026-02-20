@@ -8,6 +8,9 @@ public class LevelConfig : ScriptableObject
     private List<BloblinConfig> bloblins = new List<BloblinConfig>();
 
     [SerializeField]
+    private List<EnemyConfig> enemies = new List<EnemyConfig>();
+
+    [SerializeField]
     private List<ItemConfig> items = new List<ItemConfig>();
 
     [SerializeField, TextArea(10, 20)]
@@ -44,6 +47,7 @@ public class LevelConfig : ScriptableObject
 
     public string MapLayout => mapLayout;
     public List<BloblinConfig> Bloblins => bloblins;
+    public List<EnemyConfig> Enemies => enemies;
     public List<ItemConfig> Items => items;
 
     public CellType GetCellTypeAt(int x, int y)
@@ -93,6 +97,23 @@ public class BloblinConfig
     private int y;
 
     public BloblinType Type => type;
+    public int X => x;
+    public int Y => y;
+}
+
+[System.Serializable]
+public class EnemyConfig
+{
+    [SerializeField]
+    private EnemyType type;
+
+    [SerializeField]
+    private int x;
+
+    [SerializeField]
+    private int y;
+
+    public EnemyType Type => type;
     public int X => x;
     public int Y => y;
 }

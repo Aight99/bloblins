@@ -14,3 +14,8 @@ public interface ICreature : IEnvironmentObject
 }
 
 public interface IBloblin : ICreature { }
+
+public interface IEnemy : ICreature
+{
+    IEnemyBehavior Behavior { get; }
+}

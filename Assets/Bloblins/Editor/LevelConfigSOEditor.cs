@@ -20,6 +20,10 @@ public class LevelConfigEditor : Editor
                 + "G - Ground (walkable)\n"
                 + "W - Water (not walkable)\n"
                 + "_ - Void (not walkable)\n\n"
+                + "Preview Legend:\n"
+                + "B - Bloblin (black)\n"
+                + "E - Enemy (red)\n"
+                + "O - Item (black)\n\n"
                 + "Map dimensions are calculated automatically based on the layout.",
             MessageType.Info
         );
@@ -64,6 +68,7 @@ public class LevelPreviewWindow : EditorWindow
     private LevelConfig levelConfig;
     private GUIStyle cellStyle;
     private GUIStyle bloblinStyle;
+    private GUIStyle enemyStyle;
     private GUIStyle itemStyle;
     private GUIStyle labelStyle;
 
@@ -83,6 +88,12 @@ public class LevelPreviewWindow : EditorWindow
         bloblinStyle.alignment = TextAnchor.MiddleCenter;
         bloblinStyle.fontSize = 12;
         bloblinStyle.fontStyle = FontStyle.Bold;
+
+        enemyStyle = new GUIStyle();
+        enemyStyle.normal.textColor = Color.red;
+        enemyStyle.alignment = TextAnchor.MiddleCenter;
+        enemyStyle.fontSize = 12;
+        enemyStyle.fontStyle = FontStyle.Bold;
 
         itemStyle = new GUIStyle();
         itemStyle.normal.textColor = Color.black;
@@ -141,6 +152,17 @@ public class LevelPreviewWindow : EditorWindow
                 cellSize
             );
             GUI.Label(bloblinRect, "B", bloblinStyle);
+        }
+
+        foreach (var enemy in levelConfig.Enemies)
+        {
+            Rect enemyRect = new Rect(
+                startX + enemy.X * cellSize,
+                startY + enemy.Y * cellSize,
+                cellSize,
+                cellSize
+            );
+            GUI.Label(enemyRect, "E", enemyStyle);
         }
 
         foreach (var item in levelConfig.Items)

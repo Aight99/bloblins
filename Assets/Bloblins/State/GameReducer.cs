@@ -15,8 +15,10 @@ public static class GameReducer
                 return HandleCellClick(ref state, cellClick);
 
             case HandleTurnChangeAction:
-                HandleTurnChange(ref state);
-                return null;
+                return HandleTurnChange(ref state);
+
+            case ProcessEnemyTurnAction:
+                return ProcessEnemyTurn(ref state);
 
             default:
                 throw new System.NotImplementedException();
@@ -87,9 +89,39 @@ public static class GameReducer
         state = state.WithSelectedObject(null);
     }
 
-    private static void HandleTurnChange(ref GameState state)
+    private static GameAction HandleTurnChange(ref GameState state)
     {
-        // DebugHelper.LogYippee("Смена хода");
         state = state.WithNextTurn();
+        
+        if (state.TurnQueue.CurrentCreature is IEnemy)
+        {
+            return new ProcessEnemyTurnAction();
+        }
+
+        return null;
+    }
+
+    private static GameAction ProcessEnemyTurn(ref GameState state)
+    {
+        if (state.TurnQueue.CurrentCreature is not IEnemy enemy)
+        {
+            return null;
+        }
+
+        var nextPosition = enemy.Behavior.DecideNextMove(enemy, state);
+        
+        if (nextPosition == enemy.Position)
+        {
+            return new HandleTurnChangeAction();
+        }
+
+        var newField = state.Field.WithMovedCreature(enemy, nextPosition);
+        if (newField == state.Field)
+        {
+            return new HandleTurnChangeAction();
+        }
+
+        state = state.WithField(newField);
+        return new HandleTurnChangeAction();
     }
 }

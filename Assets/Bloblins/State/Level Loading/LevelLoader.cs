@@ -63,6 +63,27 @@ public static class LevelLoader
             }
         }
 
+        foreach (var enemyConfig in config.Enemies)
+        {
+            var position = new CellPosition(enemyConfig.X, enemyConfig.Y);
+            ICreature creature = null;
+
+            switch (enemyConfig.Type)
+            {
+                case EnemyType.GraySolder:
+                    creature = new GraySolder(position, new GraySolderBehavior());
+                    break;
+                default:
+                    throw new System.NotImplementedException();
+            }
+
+            if (creature != null)
+            {
+                objects[position] = creature;
+                creatures.Add(creature);
+            }
+        }
+
         foreach (var itemConfig in config.Items)
         {
             var position = new CellPosition(itemConfig.X, itemConfig.Y);

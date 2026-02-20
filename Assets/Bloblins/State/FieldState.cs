@@ -58,6 +58,22 @@ public class FieldState
         return new FieldState(Width, Height, newEnvironment, Creatures, CellTypes);
     }
 
+    public FieldState WithMovedCreature(ICreature creature, CellPosition targetCell)
+    {
+        if (!CheckIsCreatureReachable(creature, targetCell))
+        {
+            return this;
+        }
+
+        var newEnvironment = new Dictionary<CellPosition, IEnvironmentObject>(EnvironmentObjects);
+        newEnvironment.Remove(creature.Position);
+        newEnvironment[targetCell] = creature;
+        creature.Position = targetCell;
+
+        DebugHelper.LogMovement($"{creature.Name} топает на {targetCell}");
+        return new FieldState(Width, Height, newEnvironment, Creatures, CellTypes);
+    }
+
     private bool CheckIsReachable(IBloblin bloblin, CellPosition selectedCell)
     {
         var isReachable = bloblin.CanMoveTo(bloblin.Position, selectedCell);
@@ -90,6 +106,30 @@ public class FieldState
             );
             return false;
         }
+        return true;
+    }
+
+    private bool CheckIsCreatureReachable(ICreature creature, CellPosition selectedCell)
+    {
+        var isReachable = creature.CanMoveTo(creature.Position, selectedCell);
+        var isWalkable = CellTypes[selectedCell].IsWalkable();
+        var isOccupied = EnvironmentObjects.ContainsKey(selectedCell);
+
+        if (!isReachable)
+        {
+            return false;
+        }
+
+        if (!isWalkable)
+        {
+            return false;
+        }
+
+        if (isOccupied)
+        {
+            return false;
+        }
+        
         return true;
     }
 }

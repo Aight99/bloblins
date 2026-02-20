@@ -21,3 +21,5 @@ public class LoadLevelAction : GameAction
 }
 
 public class HandleTurnChangeAction : GameAction { }
+
+public class ProcessEnemyTurnAction : GameAction { }
